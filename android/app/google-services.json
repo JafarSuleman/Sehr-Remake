@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1049835585992",
+    "project_id": "sehr-f33bb",
+    "storage_bucket": "sehr-f33bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049835585992:android:0850d112569247150240fd",
+        "android_client_info": {
+          "package_name": "com.sehr.pk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg4ZzvEribkceqi-U7UR-C8KG-zAoOWKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1049835585992:android:ecf71dcc007bf37a0240fd",
+        "android_client_info": {
+          "package_name": "com.syther.sehr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBg4ZzvEribkceqi-U7UR-C8KG-zAoOWKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
