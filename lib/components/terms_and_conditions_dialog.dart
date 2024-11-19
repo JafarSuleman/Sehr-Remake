@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehr_remake/utils/color_manager.dart';
-import '../controller/special_package_controller.dart'; // Import the controller
-import '../controller/user_controller.dart';
 import '../utils/string_manager.dart';
-import '../view/home/special_package_screen/location_selection_screen.dart';
-import '../view/home/special_package_screen/special_package_screen.dart';
 
-void specialPackageInfoDialog(BuildContext context, [String? specialPackage, bool? isFromLogin = false,String? email,bool? isFromLogout = false,]  ) {
-  final UserController userController = Get.put(UserController());
+void termsAndConditionsDialog(
+    BuildContext context,
+    {
+      String? specialPackage,
+      bool? isFromLogin = false,
+      String? email,
+      bool? isFromLogout = false,
+      required VoidCallback onContinuePressed
+    }) {
 
   showDialog(
     context: context,
@@ -16,12 +19,9 @@ void specialPackageInfoDialog(BuildContext context, [String? specialPackage, boo
       return AlertDialog(
         title: const Center(
           child: Text(
-            StringManager.specialPackageDialogTitle,
-            textAlign: TextAlign.right,
-            textDirection: TextDirection.rtl,
+            "Terms And Conditions",
             style: TextStyle(
-              fontSize: 24,
-              fontFamily: 'UrduFont',
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -32,12 +32,12 @@ void specialPackageInfoDialog(BuildContext context, [String? specialPackage, boo
             const SizedBox(height: 10),
             const SizedBox(
               width: 350,
-              height: 480,
+              height: 460,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
                     Text(
-                      StringManager.specialPackageDialogDescription,
+                      StringManager.termsAndConditions,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontFamily: 'UrduFont',
@@ -55,8 +55,8 @@ void specialPackageInfoDialog(BuildContext context, [String? specialPackage, boo
                 Expanded(
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.resolveWith((states) => ColorManager.errorLight),
+                      backgroundColor: MaterialStateProperty.resolveWith(
+                              (states) => ColorManager.errorLight),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -76,26 +76,15 @@ void specialPackageInfoDialog(BuildContext context, [String? specialPackage, boo
                 Expanded(
                   child: ElevatedButton(
                     style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.resolveWith((states) => ColorManager.home_button),
+                      backgroundColor: MaterialStateProperty.resolveWith(
+                              (states) => ColorManager.home_button),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),
-                    onPressed: () {
-                      print("Activated Special package ==> $specialPackage");
-                      Get.back();
-                      if (specialPackage != null) {
-                        Get.to(() => SpecialPackageScreen(
-                          selectedLocationId: userController.userModel.selectedLocationId ?? '',
-                        ));
-                      } else {
-                        Get.back();
-                        Get.to(() =>  LocationSelectionScreen(isFromLogin: isFromLogin,email: email,isFromLogout: isFromLogout,));
-                      }
-                    },
+                    onPressed: onContinuePressed,
                     child: const Text(
                       'Continue',
                       style: TextStyle(color: Colors.black, fontSize: 10),

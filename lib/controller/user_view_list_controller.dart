@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import '../model/user_table_model.dart';
+import '../utils/app/constant.dart';
 
 class UserTableController extends GetxController {
   RxList<SpecialPackageUserModel> users = <SpecialPackageUserModel>[].obs;
@@ -10,7 +10,7 @@ class UserTableController extends GetxController {
 
   Future<void> fetchUsersBySpecialPackage(String packageId, String type) async {
     isLoading.value = true;
-    final url = 'https://sehr-backend.onrender.com/api/v1/specialpackage/users-by-special-package/$packageId?type=$type';
+    final url = '${Constants.BASE_URL}${Constants.FETCH_USER_BY_SPECIAL_ID}/$packageId?type=$type';
 
     try {
       final response = await http.get(Uri.parse(url));

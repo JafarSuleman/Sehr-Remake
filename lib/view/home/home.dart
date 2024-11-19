@@ -14,6 +14,7 @@ import 'package:sehr_remake/utils/app/constant.dart';
 import 'package:sehr_remake/view/home/report_screen.dart';
 import 'package:sehr_remake/view/home/shop/shop_detail_view.dart';
 import 'package:sehr_remake/view/home/shop_screen.dart';
+import 'package:sehr_remake/view/home/special_package_screen/selected_special_package_screen.dart';
 import 'package:sehr_remake/view/home/special_package_screen/special_package_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/drawer_component.dart';
@@ -36,7 +37,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   Position? position;
   String? _currentLocationName;
   GlobalKey<ScaffoldState> _scafoldKey = GlobalKey();
@@ -82,8 +84,8 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
     return distance; // Distance in kilometers
   }
 
-  double calculateDistance1(BussinessModel shop, double userLat,
-      double userLon) {
+  double calculateDistance1(
+      BussinessModel shop, double userLat, double userLon) {
     const double earthRadius = 6371.0; // Radius of the Earth in kilometers
 
     double lat1 = userLat * pi / 180.0;
@@ -132,8 +134,8 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
 
   // }
 
-  List<BussinessModel> sortShopsByDistance(List<BussinessModel> allShops,
-      Position userLocation) {
+  List<BussinessModel> sortShopsByDistance(
+      List<BussinessModel> allShops, Position userLocation) {
     allShops.sort((a, b) {
       double distanceToA = Geolocator.distanceBetween(
         userLocation.latitude,
@@ -155,7 +157,6 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
     return allShops;
   }
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -165,8 +166,7 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
     _blinkAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),
-    )
-      ..repeat(reverse: true);
+    )..repeat(reverse: true);
 
     // context
     //     .read<UserController>()
@@ -180,10 +180,8 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
       _blinkAnimationController.repeat(reverse: true);
     }
 
-
     context.read<BussinessController>().getBussinesss();
     //context.read<PackageController>().fetchSpecialPackages();
-
 
     // context.read<PackageController>().addListener(_updateBlinkingState);
     // context.read<UserController>().addListener(_updateBlinkingState);
@@ -281,348 +279,339 @@ class _HomeScreenState extends State<HomeScreen>  with SingleTickerProviderState
 
   @override
   Widget build(BuildContext context) {
-
     if (_isLoading) {
       return Scaffold(
         body: Center(child: loadingSpinkit(ColorManager.gradient1, 80)),
       );
     }
-    return Consumer<UserController>(
-        builder: (context, userController, child) {
-          var userProvider = context
-              .watch<UserController>()
-              .userModel;
+    return Consumer<UserController>(builder: (context, userController, child) {
+      var userProvider = context.watch<UserController>().userModel;
 
-          print(userProvider.firstName);
-          print("Special Package ==> ${userProvider.specialPackage}");
+      print(userProvider.firstName);
+      print("Special Package ==> ${userProvider.specialPackage}");
 
-          if (userProvider.package == "653e1c4c9818104d6fc5797f" ||
-              userProvider.package == "653e1c4c9818104d6fc57980" ||
-              userProvider.package == "653e1c4c9818104d6fc57981" ||
-              userProvider.package == "653e1c4c9818104d6fc57988" ||
-              userProvider.package == "653e1e979818104d6fc5798b") {
-            context
-                .watch<BussinessController>()
-                .checkForBussinessData(
+      if (userProvider.package == "653e1c4c9818104d6fc5797f" ||
+          userProvider.package == "653e1c4c9818104d6fc57980" ||
+          userProvider.package == "653e1c4c9818104d6fc57981" ||
+          userProvider.package == "653e1c4c9818104d6fc57988" ||
+          userProvider.package == "653e1e979818104d6fc5798b") {
+        context
+            .watch<BussinessController>()
+            .checkForBussinessData(
                 FirebaseAuth.instance.currentUser!.phoneNumber.toString())
-                .then((value) {
-              if (value == true) {
-                return;
-              }
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddBusinessDetailsView()));
-            });
+            .then((value) {
+          if (value == true) {
+            return;
           }
-          var business = context
-              .watch<BussinessController>()
-              .bussinessModel;
-          var deviceSize = MediaQuery
-              .of(context)
-              .size;
-          if (position != null) {
-            business.sort((a, b) =>
-                calculateDistance1(
-                    a, position!.latitude, position!.longitude)
-                    .compareTo(
-                    calculateDistance1(
-                        b, position!.latitude, position!.longitude)));
-          }
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AddBusinessDetailsView()));
+        });
+      }
+      var business = context.watch<BussinessController>().bussinessModel;
+      var deviceSize = MediaQuery.of(context).size;
+      if (position != null) {
+        business.sort((a, b) =>
+            calculateDistance1(a, position!.latitude, position!.longitude)
+                .compareTo(calculateDistance1(
+                    b, position!.latitude, position!.longitude)));
+      }
 
-
-          return Scaffold(
-            key: _scafoldKey,
-            drawer: DrawerComponent(
-                name: "${userProvider.firstName} ${userProvider.lastName}",
-                phone: userProvider.email != null ? userProvider.email
-                    .toString() : userProvider.mobile.toString(),
-                imgUrl: userProvider.avatar.toString()),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppMargin.m10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      return Scaffold(
+        key: _scafoldKey,
+        drawer: DrawerComponent(
+            name: "${userProvider.firstName} ${userProvider.lastName}",
+            phone: userProvider.email != null
+                ? userProvider.email.toString()
+                : userProvider.mobile.toString(),
+            imgUrl: userProvider.avatar.toString()),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppMargin.m10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
+                    IconButton(
+                        onPressed: () {
+                          _scafoldKey.currentState!.openDrawer();
+                        },
+                        icon: Icon(
+                          Icons.horizontal_split_sharp,
+                          color: ColorManager.gradient1,
+                          size: 25,
+                        )),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        IconButton(
-                            onPressed: () {
-                              _scafoldKey.currentState!.openDrawer();
-                            },
-                            icon: Icon(
-                              Icons.horizontal_split_sharp,
-                              color: ColorManager.gradient1,
-                              size: 25,
-                            )),
+                        Text(
+                          "Welcome ${userProvider.firstName} ${userProvider.lastName}",
+                          style: TextStyleManager.mediumTextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            letterSpacing: 0,
+                          ),
+                        ),
                         const SizedBox(
-                          width: 20,
+                          height: AppMargin.m6,
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Welcome ${userProvider.firstName} ${userProvider
-                                  .lastName}",
-                              style: TextStyleManager.mediumTextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                letterSpacing: 0,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: AppMargin.m6,
-                            ),
-                            Text(
-                              _currentLocationName == null
-                                  ? "Loading Location..."
-                                  : _currentLocationName!,
-                              style: TextStyleManager.lightTextStyle(
-                                  fontSize: 11,
-                                  textColor: ColorManager.textGrey),
-                            )
-                          ],
-                        ),
-                        const Spacer(),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.notifications_active_outlined,
-                              size: 35,
-                              color: ColorManager.gradient2,
-                            ))
+                        Text(
+                          _currentLocationName == null
+                              ? "Loading Location..."
+                              : _currentLocationName!,
+                          style: TextStyleManager.lightTextStyle(
+                              fontSize: 11, textColor: ColorManager.textGrey),
+                        )
                       ],
                     ),
+                    const Spacer(),
+                    IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.notifications_active_outlined,
+                          size: 35,
+                          color: ColorManager.gradient2,
+                        ))
+                  ],
+                ),
 
-                    const SizedBox(
-                      height: AppMargin.m16,
-                    ),
-                    //Banner Start
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxHeight: MediaQuery
-                                .of(context)
-                                .size
-                                .width / 2,
-                          ),
-                          child: FlutterCarousel(
-                            options: CarouselOptions(
-                              autoPlay: true,
-                              autoPlayInterval: const Duration(seconds: 3),
-                              disableCenter: true,
-                              viewportFraction: deviceSize.width > 800.0
-                                  ? 0.8
-                                  : 1.0,
-                              height: deviceSize.height * 0.45,
-                              enableInfiniteScroll: true,
-                              slideIndicator: const CircularSlideIndicator(),
-                            ),
-                            items: [
-                              Image.network(
-                                  "${Constants.BASE_URL}/uploads/11.png"),
-                              Image.network(
-                                  "${Constants.BASE_URL}/uploads/22.png"),
-                              Image.network(
-                                  "${Constants.BASE_URL}/uploads/33.png")
-                            ],
-                          ),
+                const SizedBox(
+                  height: AppMargin.m16,
+                ),
+                //Banner Start
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.width / 2,
+                      ),
+                      child: FlutterCarousel(
+                        options: CarouselOptions(
+                          autoPlay: true,
+                          autoPlayInterval: const Duration(seconds: 3),
+                          disableCenter: true,
+                          viewportFraction:
+                              deviceSize.width > 800.0 ? 0.8 : 1.0,
+                          height: deviceSize.height * 0.45,
+                          enableInfiniteScroll: true,
+                          slideIndicator: const CircularSlideIndicator(),
                         ),
+                        items: [
+                          Image.network("${Constants.BASE_URL}/uploads/11.png"),
+                          Image.network("${Constants.BASE_URL}/uploads/22.png"),
+                          Image.network("${Constants.BASE_URL}/uploads/33.png")
+                        ],
                       ),
                     ),
-                    const SizedBox(height: AppMargin.m17),
+                  ),
+                ),
+                const SizedBox(height: AppMargin.m17),
 
-                    //Banner End
+                //Banner End
+                GestureDetector(
+                  onTap: () {
+                    if (userProvider.specialPackage != null &&
+                        userProvider.specialPackage!.isNotEmpty) {
+                      Get.to(() => SelectedSpecialPackageScreen(specialPackageId: userProvider.specialPackage,));
+                    } else {
+                      specialPackageInfoDialog(
+                          context, userProvider.specialPackage);
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        userProvider.specialPackage == null ||
+                                userProvider.specialPackage!.isEmpty
+                            ? AnimatedBuilder(
+                                animation: _blinkAnimationController,
+                                builder: (context, child) {
+                                  return Opacity(
+                                    opacity: showBlinking
+                                        ? _blinkAnimationController.value
+                                        : 1.0,
+                                    child: HomeButtonComponent(
+                                      btnColor:
+                                          Colors.redAccent.withOpacity(0.5),
+                                      width: double.infinity,
+                                      imagePath: AppIcons.specialIcon,
+                                      iconColor: Colors.white,
+                                      btnTextColor: Colors.white,
+                                      name: "Special Package",
+                                    ),
+                                  );
+                                },
+                              )
+                            : const HomeButtonComponent(
+                                btnColor: Colors.redAccent,
+                                width: double.infinity,
+                                imagePath: AppIcons.specialIcon,
+                                iconColor: Colors.white,
+                                btnTextColor: Colors.white,
+                                name: "Special Package",
+                              ),
+
+                        // Positioned(
+                        //     right: -25,
+                        //     bottom: 0,
+                        //     child: Image.asset('assets/images/offer-Gif.gif',scale: 7.5,))
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppMargin.m17),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
                     GestureDetector(
                       onTap: () {
-                        specialPackageInfoDialog(context,userProvider.specialPackage);
+                        Get.to(AlertScreen());
+                        //Get.toNamed(Routes.alertRoute);
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10),
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            userProvider.specialPackage == null || userProvider.specialPackage!.isEmpty ?
-                            AnimatedBuilder(
-                              animation: _blinkAnimationController,
-                              builder: (context, child) {
-                                return Opacity(
-                                  opacity: showBlinking
-                                      ? _blinkAnimationController.value
-                                      : 1.0,
-                                  child: HomeButtonComponent(
-                                    btnColor: Colors.redAccent.withOpacity(0.5),
-                                    width: double.infinity,
-                                    imagePath: AppIcons.specialIcon,
-                                    iconColor: Colors.white,
-                                    btnTextColor: Colors.white,
-                                    name: "Special Package",
-                                  ),
-                                );
-                              },
-                            ) : const HomeButtonComponent(
-                              btnColor: Colors.redAccent,
-                              width: double.infinity,
-                              imagePath: AppIcons.specialIcon,
-                              iconColor: Colors.white,
-                              btnTextColor: Colors.white,
-                              name: "Special Package",
-                            ),
-
-                            // Positioned(
-                            //     right: -25,
-                            //     bottom: 0,
-                            //     child: Image.asset('assets/images/offer-Gif.gif',scale: 7.5,))
-                          ],
-                        ),
-                      ),),
-                    const SizedBox(height: AppMargin.m17),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(AlertScreen());
-                            //Get.toNamed(Routes.alertRoute);
-                          },
-                          child: const HomeButtonComponent(
-                              name: "Alerts",
-                              iconData: Icons.notification_important_rounded),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (
-                                      context) => const SelectedPackageScreen(),
-                                ));
-                          },
-                          child: const HomeButtonComponent(
-                              name: "Packages", iconData: Icons.local_offer),
-                        )
-                      ],
+                      child: const HomeButtonComponent(
+                          name: "Alerts",
+                          iconData: Icons.notification_important_rounded),
                     ),
-
-                    const SizedBox(
-                      height: AppMargin.m18,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(ReportScreen());
-                            //Get.toNamed(Routes.reportRoute);
-                          },
-                          child: const HomeButtonComponent(
-                              name: "Reports",
-                              iconData: Icons.history_edu_rounded),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(const ShopViewScreen());
-                            //Get.toNamed(Routes.shopviewRoute);
-                          },
-                          child: const HomeButtonComponent(
-                              name: "Shops", iconData: Icons.store),
-                        )
-                      ],
-                    ),
-                    const SizedBox(
-                      height: AppMargin.m20,
-                    ),
-                    Text(
-                      "Shops Near You",
-                      style: TextStyleManager.mediumTextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(
-                      height: AppMargin.m20,
-                    ),
-                    //changed bussiness near loc strat
-                    position != null
-                        ? business.length.bitLength == 0
-                        ? const Text(
-                      "No Shops Here !",
-                      style: TextStyle(fontSize: 16),
-                    )
-                        : Expanded(
-                      child: GridView.builder(
-                          itemCount: business.length.bitLength,
-                          gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 25,
-                              crossAxisSpacing: 25,
-                              mainAxisExtent: 200),
-                          itemBuilder: (context, index) {
-                            List<BussinessModel> nearByShops = business;
-
-                            final distance = calculateDistance(
-                              position!.latitude,
-                              position!.longitude,
-                              nearByShops[index].lat as double,
-                              nearByShops[index].lon as double,
-                            );
-                            final formattedDistance = distance < 1
-                                ? '${(distance * 1000).toStringAsFixed(
-                                2)} meters away'
-                                : '${distance.toStringAsFixed(2)} km away';
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ShopDetailsView(
-                                              model: nearByShops[index],
-                                              distance: formattedDistance),
-                                    ));
-                              },
-                              child: GridTile(
-                                header: SizedBox(
-                                  height: 150,
-                                  child: CachedNetworkImage(
-                                      fit: BoxFit.cover,
-                                      imageUrl:
-                                      "${Constants
-                                          .BASE_URL}/${nearByShops[index].logo
-                                          .toString()}",
-                                      placeholder: (context, url) =>
-                                          Image.network(
-                                              "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
-                                              fit: BoxFit.fill),
-                                      errorWidget: (context, url, error) {
-                                        return Image.network(
-                                            "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
-                                            fit: BoxFit.fill);
-                                      }),
-                                ),
-                                child: const Text(""),
-                                footer: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(nearByShops[index]
-                                        .businessName
-                                        .toString()),
-                                    Text(formattedDistance)
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
-                    )
-                        : const Center(
-                      child: Text("Enable Location to get Shops"),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  SelectedPackageScreen(selectedSpecialId: userProvider.specialPackage,),
+                            ));
+                      },
+                      child: const HomeButtonComponent(
+                          name: "Packages", iconData: Icons.local_offer),
                     )
                   ],
                 ),
-              ),
+
+                const SizedBox(
+                  height: AppMargin.m18,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(ReportScreen(
+                          userId: userProvider.id,
+                        ));
+                        //Get.toNamed(Routes.reportRoute);
+                      },
+                      child: const HomeButtonComponent(
+                          name: "Reports", iconData: Icons.history_edu_rounded),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(const ShopViewScreen());
+                        //Get.toNamed(Routes.shopviewRoute);
+                      },
+                      child: const HomeButtonComponent(
+                          name: "Shops", iconData: Icons.store),
+                    )
+                  ],
+                ),
+                const SizedBox(
+                  height: AppMargin.m20,
+                ),
+                Text(
+                  "Shops Near You",
+                  style: TextStyleManager.mediumTextStyle(fontSize: 16),
+                ),
+                const SizedBox(
+                  height: AppMargin.m20,
+                ),
+                //changed bussiness near loc strat
+                position != null
+                    ? business.length.bitLength == 0
+                        ? const Text(
+                            "No Shops Here !",
+                            style: TextStyle(fontSize: 16),
+                          )
+                        : Expanded(
+                            child: GridView.builder(
+                                itemCount: business.length.bitLength,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        mainAxisSpacing: 25,
+                                        crossAxisSpacing: 25,
+                                        mainAxisExtent: 200),
+                                itemBuilder: (context, index) {
+                                  List<BussinessModel> nearByShops = business;
+
+                                  final distance = calculateDistance(
+                                    position!.latitude,
+                                    position!.longitude,
+                                    nearByShops[index].lat as double,
+                                    nearByShops[index].lon as double,
+                                  );
+                                  final formattedDistance = distance < 1
+                                      ? '${(distance * 1000).toStringAsFixed(2)} meters away'
+                                      : '${distance.toStringAsFixed(2)} km away';
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                ShopDetailsView(
+                                                    model: nearByShops[index],
+                                                    distance:
+                                                        formattedDistance),
+                                          ));
+                                    },
+                                    child: GridTile(
+                                      header: SizedBox(
+                                        height: 150,
+                                        child: CachedNetworkImage(
+                                            fit: BoxFit.cover,
+                                            imageUrl:
+                                                "${Constants.BASE_URL}/${nearByShops[index].logo.toString()}",
+                                            placeholder: (context, url) =>
+                                                Image.network(
+                                                    "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
+                                                    fit: BoxFit.fill),
+                                            errorWidget: (context, url, error) {
+                                              return Image.network(
+                                                  "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
+                                                  fit: BoxFit.fill);
+                                            }),
+                                      ),
+                                      child: const Text(""),
+                                      footer: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(nearByShops[index]
+                                              .businessName
+                                              .toString()),
+                                          Text(formattedDistance)
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          )
+                    : const Center(
+                        child: Text("Enable Location to get Shops"),
+                      )
+              ],
             ),
-          );
-        });
+          ),
+        ),
+      );
+    });
   }
 }

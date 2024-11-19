@@ -1,19 +1,12 @@
 import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
-import 'package:sehr_remake/controller/bussinesController.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../model/order_model.dart';
 import '../model/user_model.dart' as UserM;
 import '../utils/app/constant.dart';
-import '../utils/auth_check/bussiness_data_check.dart';
 
 class UserController with ChangeNotifier {
   UserM.User _userModel = UserM.User();
@@ -22,7 +15,7 @@ class UserController with ChangeNotifier {
   Future<bool> sendEmailOTP(String email) async {
     try {
       var response = await http.post(
-        Uri.parse('https://sehr-backend.onrender.com/api/v1/user/send-otp-email'),
+        Uri.parse('${Constants.BASE_URL}${Constants.SEND_OTP_EMAIL}'),
         body: jsonEncode({'email': email}),
         headers: {'Content-Type': 'application/json'},
       );
@@ -45,7 +38,7 @@ class UserController with ChangeNotifier {
   Future<bool> verifyEmailOTP( String otp) async {
     try {
       var response = await http.post(
-        Uri.parse('https://sehr-backend.onrender.com/api/v1/user/verify-otp-email'),
+        Uri.parse('${Constants.BASE_URL}${Constants.VERIFY_OTP_EMAIL}'),
         body: jsonEncode({'otp': otp}),
         headers: {'Content-Type': 'application/json'},
       );
@@ -72,13 +65,13 @@ class UserController with ChangeNotifier {
       var response;
       if (identifier.contains('@')) {
         response = await http.post(
-          Uri.parse("https://sehr-backend.onrender.com${Constants.FIND_USER_PROFILE}"),
+          Uri.parse("${Constants.BASE_URL}${Constants.FIND_USER_PROFILE}"),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({"email": identifier}),
         );
       } else {
         response = await http.post(
-          Uri.parse("https://sehr-backend.onrender.com${Constants.FIND_USER_PROFILE}"),
+          Uri.parse("${Constants.BASE_URL}${Constants.FIND_USER_PROFILE}"),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({"phoneNumber": identifier}),
         );
@@ -109,14 +102,14 @@ class UserController with ChangeNotifier {
       if (identifier.contains('@')) {
         // For email identifier, use a POST request with identifier in the body
         response = await http.post(
-          Uri.parse("https://sehr-backend.onrender.com/api/v1/user/check-email"),
+          Uri.parse("${Constants.BASE_URL}${Constants.CHECK_PROFILE_EXISTS_BY_EMAIL}"),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({"email": identifier}),
         );
       } else {
         // For other cases, continue with the original GET request
         response = await http.get(
-          Uri.parse("https://sehr-backend.onrender.com${Constants.CHECK_PROFILE_EXISTS}/$identifier"),
+          Uri.parse("${Constants.BASE_URL}${Constants.CHECK_PROFILE_EXISTS}/$identifier"),
         );
       }
 
@@ -196,7 +189,7 @@ class UserController with ChangeNotifier {
     String res = "Something Went Wrong";
     try {
       // Initialize the request to the API endpoint
-      var uri = Uri.parse("https://sehr-backend.onrender.com/api/v1/user/register");
+      var uri = Uri.parse("${Constants.BASE_URL}${Constants.CREATE_USER}");
       var request = http.MultipartRequest('POST', uri);
 
       // Use email from user object if available
@@ -233,28 +226,23 @@ class UserController with ChangeNotifier {
         print("Normal package activated");
       }
 
-      // Log fields for debugging
       print("Data being sent to API:");
       request.fields.forEach((key, value) {
         print("$key: $value");
       });
 
-      // Prepare file upload
       var stream = http.ByteStream(DelegatingStream.typed(file.openRead()));
       var length = await file.length();
       var multipartFile = http.MultipartFile('avatar', stream, length, filename: basename(file.path));
       request.files.add(multipartFile);
 
-      // Log file information
       print("File being sent: ${file.path}, Size: $length bytes");
 
-      // Send the request
       var response = await request.send();
       print("Status Code: ${response.statusCode}");
       if (response.statusCode == 200) {
         res = "User has Been Registered";
       } else {
-        // Detailed error response
         final responseBody = await response.stream.bytesToString();
         print("Error Status Code: ${response.statusCode}");
         print("Error Reason: ${response.reasonPhrase}");
@@ -302,7 +290,6 @@ class UserController with ChangeNotifier {
         request.files.add(multipartFile);
       }
 
-      // Send the request and await the response
       var response = await request.send();
 
       if (response.statusCode == 200) {

@@ -103,6 +103,7 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
                       // }
 
                       print("Email ==> ${widget.email}");
+                      print("Phone Number ==> ${widget.user.mobile}");
                       print("Location In Upload Photo ==> ${widget.user.selectedLocationId}");
 
                       userModel.User userData = userModel.User(
@@ -129,12 +130,14 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
                       });
 
                       if (res == "User has Been Registered") {
-                        Navigator.pushReplacement(
+                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                             builder: (context) => HomeScreen(),
                           ),
+                              (Route<dynamic> route) => false, // This removes all previous routes
                         );
+
                       } else {
                         // Display error and remain on the screen
                         ScaffoldMessenger.of(context).showSnackBar(

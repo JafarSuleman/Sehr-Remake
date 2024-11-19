@@ -74,7 +74,7 @@ class RoutesGenerator {
       case Routes.package_screenRoute:
         return MaterialPageRoute(builder: (_) => PackageScreen());
       case Routes.reportRoute:
-        return MaterialPageRoute(builder: (_) => ReportScreen());
+        return MaterialPageRoute(builder: (_) => ReportScreen(userId: '',));
       case Routes.shopviewRoute:
         return MaterialPageRoute(builder: (_) => ShopViewScreen());
       // case Routes.shopdetailRoute:

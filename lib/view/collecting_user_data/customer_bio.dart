@@ -24,8 +24,9 @@ class AddCustomerBioView extends StatefulWidget {
   final String? packageName;
   final String? specialPackageName;
   final String? email;
+  final String? whatsApp;
   final String? selectedLocationId;
-  const AddCustomerBioView({super.key, this.packageName,this.email, this.specialPackageName, this.selectedLocationId});
+  const AddCustomerBioView({super.key,this.whatsApp, this.packageName,this.email, this.specialPackageName, this.selectedLocationId});
 
   @override
   State<AddCustomerBioView> createState() => _AddCustomerBioViewState();
@@ -71,6 +72,8 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
   @override
   Widget build(BuildContext context) {
     print("Special Package Id ==> ${widget.specialPackageName}");
+    print("Package Id ==> ${widget.packageName}");
+    print("Customer Bio Screen Email ==> ${widget.email}");
     print("Special Package Location Id ==> ${widget.selectedLocationId}");
     return SafeArea(
       child: Scaffold(
@@ -236,8 +239,12 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                         }
                         SharedPreferences prefs = await SharedPreferences.getInstance();
                         String authMethod = prefs.getString('authMethod') ?? '';
-                        print("Email ==> ${widget.email}");
+                        String identifier = prefs.getString('identifier') ?? '';
 
+                        String? phone;
+                        if (authMethod == 'phone') {
+                          phone = identifier;
+                        }
                         // if (authMethod == 'email' && phoneNumberController.text.isEmpty) {
                         //   ScaffoldMessenger.of(context).showSnackBar(
                         //     SnackBar(content: Text('Phone number is required')),
@@ -252,7 +259,7 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                               builder: (context) => SetLocationView(
                                 fname: firstNameController.text,
                                 lname: lastNameController.text,
-                                phoneNumber: authMethod == 'phone' ? FirebaseAuth.instance.currentUser!.phoneNumber.toString() : null,
+                                phoneNumber: phone,
                                 cnic: cnicController.text,
                                 dob: dobController.text,
                                 gender: selectedGender,

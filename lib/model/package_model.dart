@@ -12,6 +12,7 @@ class PackageModel {
   });
 
   factory PackageModel.fromJson(Map<String, dynamic> json) {
+    print("Package Model ===> ${json.toString()}");
     return PackageModel(
       id: json['_id'],
       title: json['title'],

@@ -13,12 +13,12 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
+    flutterVersionCode = '32'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
+    flutterVersionName = '1.4.1'
 }
 
 apply plugin: 'com.android.application'
@@ -48,8 +48,8 @@ android {
         applicationId "com.sehr.pk"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
-        targetSdkVersion Math.max(flutter.targetSdkVersion, 33)
+        minSdkVersion 23
+        targetSdkVersion 34
         versionCode 17
         versionName "1.2.6"
         multiDexEnabled true
@@ -66,6 +66,7 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
+            minifyEnabled true
             signingConfig signingConfigs.release    
         }
         

@@ -14,6 +14,15 @@ class Constants {
   static const CREATE_USER_DATA = '/api/v1/user';
   static const GET_BUSSINESS = '/api/v1/business';
 
+  static const SEND_OTP_EMAIL = '/api/v1/user/send-otp-email';
+  static const VERIFY_OTP_EMAIL = '/api/v1/user/verify-otp-email';
+
+  static const SEND_WHATSAPP_OTP = '/api/v1/user/send-whatsapp-otp';
+  static const VERIFY_WHATSAPP_OTP = '/api/v1/user/verify-whatsapp-otp';
+
+  static const FETCH_USER_BY_SPECIAL_ID = '/api/v1/specialpackage/users-by-special-package';
+
+
   static const PLACE_ORDER = '/api/v1/order';
   static const GET_SHOP_ORDERS = '/api/v1/order/shop';
   static const GET_USER_ORDERS = '/api/v1/order/user';
@@ -24,6 +33,9 @@ class Constants {
 
   static const GET_USER_DATA_BYID = '/api/v1/user';
   static const GET_CATEGORIES = '/api/v1/category';
+  static const GET_SPECIAL_PACKAGES = '/api/v1/specialpackage/get-package';
+  static const GET_LOCATIONS = '/api/v1/location/get-locations';
+  static const CREATE_USER = '/api/v1/user/register';
 
   static const GET_COMMISIONSALE_DETAIL = '/api/v1/commission';
 }

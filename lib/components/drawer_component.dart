@@ -42,7 +42,7 @@ class DrawerComponent extends StatelessWidget {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => AuthCheck(),
+        builder: (context) => AuthCheck(isFromLogout: true,),
       ),
     );
   }

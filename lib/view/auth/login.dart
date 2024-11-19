@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sehr_remake/utils/text_manager.dart';
@@ -7,12 +9,12 @@ import '../../components/loading_widget.dart';
 import '../../components/logo_component.dart';
 import '../../components/special_Package_Info_Dialog.dart';
 import '../../components/text_field_component.dart';
+import '../../controller/auth_controller.dart';
 import '../../utils/app/constant.dart';
 import '../../utils/asset_manager.dart';
 import '../../utils/color_manager.dart';
 import '../../utils/size_config.dart';
-import '../../controller/user_controller.dart'; // Make sure to import UserController
-import '../home/special_package_screen/special_package_screen.dart';
+import '../../controller/user_controller.dart';
 import '../profile/email_otp_screen.dart';
 import '../profile/phone_otp_screen.dart';
 
@@ -20,8 +22,10 @@ class LoginView extends StatefulWidget {
   bool? isFromSpecialPackage = false;
   String? specialPackageName;
   String? selectedLocationId;
+  bool? isFromLogout = false;
 
-  LoginView({super.key,this.isFromSpecialPackage,this.specialPackageName,this.selectedLocationId});
+
+  LoginView({super.key,this.isFromSpecialPackage,this.specialPackageName,this.selectedLocationId,this.isFromLogout});
 
   @override
   State<LoginView> createState() => _LoginViewState();
@@ -41,9 +45,65 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
 
   final _phoneFormKey = GlobalKey<FormState>();
   final _emailFormKey = GlobalKey<FormState>();
-  final _whatsAppFormKey = GlobalKey<FormState>();
   bool isLoading = false;
   bool isLoading2 = false;
+
+  Future<void> _sendWhatsAppOTP() async {
+    setState(() {
+      isLoading2 = true;
+    });
+
+    String phone = _phoneNumberController.text.startsWith('0')
+        ? _phoneNumberController.text.replaceFirst('0', '+92')
+        : _phoneNumberController.text;
+
+    try {
+      final response = await http.post(
+        Uri.parse('${Constants.BASE_URL}${Constants.SEND_WHATSAPP_OTP}'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'whatsappNumber': phone,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        if (responseBody['success'] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("OTP sent via WhatsApp")),
+          );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => phoneNumberVerificationCodeView(
+              specialPackageName: widget.specialPackageName,
+              selectedLocationId: widget.selectedLocationId,
+                phone: phone,
+                isWhatsApp: true,
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Failed to send WhatsApp OTP.")),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to send WhatsApp OTP.")),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error sending WhatsApp OTP.")),
+      );
+    } finally {
+      setState(() {
+        isLoading2 = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -66,7 +126,6 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
-    // Listeners to handle enabling/disabling fields
     _phoneNumberController.addListener(() {
       if (_phoneNumberController.text.isNotEmpty) {
         setState(() {
@@ -118,7 +177,8 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
   }
   late AnimationController _blinkAnimationController;
   bool showBlinking = true;
-
+  bool? isWhatsApp = false;
+  final AuthController authController = Get.put(AuthController());
 
 
 
@@ -162,9 +222,9 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                   fontSize: getProportionateScreenHeight(20),
                 ),
                 buildVerticleSpace(20),
-                widget.isFromSpecialPackage == true? const SizedBox.shrink():GestureDetector(
+                widget.isFromSpecialPackage == true || widget.isFromLogout == true? const SizedBox.shrink():GestureDetector(
                   onTap: () {
-                    specialPackageInfoDialog(context,widget.specialPackageName,true);
+                    specialPackageInfoDialog(context,widget.specialPackageName,true,_emailController.text.trim());
                   },
                   child: AnimatedBuilder(
                     animation: _blinkAnimationController,
@@ -185,7 +245,6 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                 ),
 
                 buildVerticleSpace(30),
-                // Phone Number Form and TextField
                 Form(
                   key: _phoneFormKey,
                   child: TextFieldWidget(
@@ -208,8 +267,6 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                       if (value == null || value.isEmpty) {
                         return 'Phone is required';
                       }
-                      // Add phone number validation logic here
-                      // For example, check if it's a valid phone number format
                       if (!GetUtils.isPhoneNumber(value)) {
                         return 'Please enter a valid phone or whatsApp number';
                       }
@@ -221,48 +278,11 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                   ),
                 ),
                 buildVerticleSpace(8),
-                // const Text(
-                //   'or',
-                //   style: TextStyle(fontSize: 16),
-                // ),
-                // buildVerticleSpace(8),
-                // // Email Form and TextField
-                // Form(
-                //   key: _whatsAppFormKey,
-                //   child: TextFieldWidget(
-                //     controller: _whatsAppController,
-                //     keyboardType: TextInputType.number,
-                //     hintText: 'Enter WhatsApp Number',
-                //     enabled: false,
-                //     prefixIcon: Image.asset(
-                //       AppIcons.whatsappIcon,
-                //       color: ColorManager.primaryLight,
-                //       scale: 30,
-                //     ),
-                //     validator: isWhatsAppFieldEnabled
-                //         ? (value) {
-                //       if (value == null || value.isEmpty) {
-                //         return 'WhatsApp Number is required';
-                //       }
-                //       // Add phone number validation logic here
-                //       // For example, check if it's a valid phone number format
-                //       if (!GetUtils.isPhoneNumber(value)) {
-                //         return 'Please enter a whatsApp number';
-                //       }
-                //       return null;
-                //     }
-                //         : null,
-                //     focusNode: _whatsAppFocusNode,
-                //     onFieldSubmit: (value) {},
-                //   ),
-                // ),
-                // buildVerticleSpace(8),
                 const Text(
                   'or',
                   style: TextStyle(fontSize: 16),
                 ),
                 buildVerticleSpace(8),
-                // Email Form and TextField
                 Form(
                   key: _emailFormKey,
                   child: TextFieldWidget(
@@ -280,7 +300,6 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                       if (value == null || value.isEmpty) {
                         return 'Email is required';
                       }
-                      // Email validation logic using GetX
                       if (!GetUtils.isEmail(value)) {
                         return 'Please enter a valid email address';
                       }
@@ -307,20 +326,22 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
 
                       if (_emailController.text.isNotEmpty) {
                         if (_emailFormKey.currentState!.validate()) {
-                          // Email registration logic
                           String email = _emailController.text.trim();
 
                           print("Email from Login Screen ===> $email");
 
                           bool otpSent = await UserController().sendEmailOTP(email);
                           if (otpSent) {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
                                     EmailVerificationCodeView(email: email,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,),
                               ),
                             );
+                            setState(() {
+                              isLoading = false;
+                            });
                           } else {
                             setState(() {
                               isLoading = false;
@@ -351,15 +372,17 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
 
                       if (_phoneNumberController.text.isNotEmpty) {
                         if (_phoneFormKey.currentState!.validate()) {
-                          // Phone number registration logic
                           String phoneNumber = _phoneNumberController.text.trim();
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  phoneNumberVerificationCodeView(phone: phoneNumber,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,),
+                                  phoneNumberVerificationCodeView(phone: phoneNumber,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,isWhatsApp: false,),
                             ),
                           );
+                          setState(() {
+                            isLoading = false;
+                          });
                         } else {
                           setState(() {
                             isLoading = false;
@@ -369,31 +392,51 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                     },
                   ),
                   buildVerticleSpace(15),
+                  // Obx(() => AppButtonWidget(
+                  //   width: 200,
+                  //   child: authController.isLoading.value
+                  //       ? loadingSpinkit(Colors.white)
+                  //       : const Text("Send OTP Via WhatsApp", style: TextStyle(color: Colors.white)),
+                  //   ontap: () {
+                  //     if (_phoneNumberController.text.isNotEmpty) {
+                  //       authController.sendWhatsAppOTP(
+                  //         context,
+                  //         _phoneNumberController.text.trim(),
+                  //         widget.specialPackageName,
+                  //         widget.selectedLocationId,
+                  //       );
+                  //     } else {
+                  //       ScaffoldMessenger.of(context).showSnackBar(
+                  //         const SnackBar(content: Text("Please enter a phone number")),
+                  //       );
+                  //     }
+                  //   },
+                  // )),
                   AppButtonWidget(
                     width: 200,
                     child:  isLoading2
                         ? loadingSpinkit(Colors.white):const Center(child: Text("Send OTP Via WhatsApp",style: TextStyle(color: Colors.white,),textAlign: TextAlign.center,)),
                     ontap: () async {
+
+
                       setState(() {
                         isLoading2 = true;
                       });
 
                       if (_phoneNumberController.text.isNotEmpty) {
                         if (_phoneFormKey.currentState!.validate()) {
-                          // Phone number registration logic
-                          String phoneNumber = _phoneNumberController.text.trim();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  phoneNumberVerificationCodeView(phone: phoneNumber,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,),
-                            ),
-                          );
-                        } else {
+                          await _sendWhatsAppOTP();
                           setState(() {
                             isLoading2 = false;
                           });
                         }
+                      } else {
+                        setState(() {
+                          isLoading2 = false;
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Please enter a phone number")),
+                        );
                       }
                     },
                   ),
@@ -440,113 +483,215 @@ void showInfoDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'سحر کیا ہے؟',
-              textAlign: TextAlign.right,
+        title: const Center(
+          child: Text(
+            'سحر کیا ہے؟',
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'UrduFont',
+              fontSize: 34,
             ),
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.red),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+          ),
         ),
-        content: SingleChildScrollView(
+        content: const SingleChildScrollView(
           child: Column(
             crossAxisAlignment:
-                CrossAxisAlignment.start, // Align text to the left
+                CrossAxisAlignment.end,
             children: [
-              const Text(
+              Text(
                 'سحر (SEHR) ایک سادہ معاشی انقلاب کا فارمولا ہے.',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'SEHR = Sober Economic and Housing Revolution',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'اس میں عام عوام اور خواص کو مکانوں کی قلت کا جو سامنا ہے اس کو کسی حد تک پورا کرنے کی کوشش کی جائے گی۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
+
               ),
+              SizedBox(height: 5,),
               Text(
                 'اس میں شامل ہونے والے تمام ممبران کو ایک مکان بالکل فری دیا جائے گا۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'کسی بھی شخص سے مکان کے حوالے سے نہ کوئی فیس لی جائے گی۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
-              Text(
-                'نہ عطیہ نه تحفہ اور نہ ہی انویسٹمنٹ لی جائے گی۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+              SizedBox(height: 5,),
+              Text('نہ عطیہ نہ تحفہ اور نہ ہی انویسٹمنٹ لی جائے گی۔',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'یہ ایک انتہائی سادہ فارمولا ہے کہ صرف اپنی ماہوار خریداری کو ایک لائن پر لاتے ہوئے سحر کوڈ والی شاپس سے کریں تو آپ کی اپنی ضروریات کو پورا کرنے کے لئے خرچ کی گئی رقم آپ کے مکان کی قسط تصور ہوگی۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'کل 240 قسطیں ہوں گی، ایک قسط 10 ہزار روہے کی ہوگی۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'یہ وہ رقم ہوگی جو آپ اپنی روز مرہ کی خریداری سے خرچ کرتے ہیں۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
-                'آپ نے سحر پروجیکٹ کو ایک روپیہ بھی ادا نہیں کرنا .',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                'آپ نے سحر پروجیکٹ کو ایک روپیہ بھی ادا نہیں کرنا ۔',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'کسی بھی شعبہ سے تعلق رکھنے والے افراد اس میں شامل ہو کر حیران کن فوائد حاصل کر سکتے ہیں ۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'ہر شعبہ کے لیے آفرز نہ صرف حیران کن ہے بلکہ ناقابل عمل نظر آتی ہے، یہی اس پروجیکٹ کے منفرد یا innovative ہونے کا ثبوت بھی ہے۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'اس پروجیکٹ کو ڈیزائن کرنے والے پروفیسر منور احمد ملک ہیں جو پہلے ہی 50 سے زائد ایجادات کے موجد ہیں۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'پاکستان انجینئرنگ کونسل اسلام آباد کے تھنک ٹینک کے ممبر رہ چکے ہیں۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'نیشنل لیول پر بہت سے پروجیکٹ ڈیزائن کر چکے ہیں پچھلے 20 سال سے اس پروجیکٹ کو ترتیب دے رہے تھے ، اسے اکنامکس کے ماہرین قابل عمل قرار دے چکے ہیں ۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
                 'یہ مکان ہر تحصیل میں پہلے سے موجود سوسائٹیز یا کالونیز میں پلاٹ لے کر بنائے جائیں گے اور پبلک کو فری دیئے جائیں گے۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
+              SizedBox(height: 5,),
               Text(
-                'یہ منصوبہ اپنے اندر ایک معاشی انقلاب بھی رکھتا ہے جب اتنی بڑی معاشی سرگرمی ایک لائن پر آجائے گی تو قیمتیں بھی کنٹرول میں آجائیں گی مہنگائی ختم ہو کر منفی ہو جائے گی ان شاءاللہ، ڈالر کا ریٹ بھی کنٹرول ہو جائے گا اور بیرونی قرضوں سے بھی نجات ملے گی ان شاءاللہ ۔',
-                style: TextStyleManager.regularTextStyle(fontSize: 16),
+                'یہ منصوبہ اپنے اندر ایک معاشی انقلاب بھی رکھتا ہے جب اتنی بڑی معاشی سرگرمی ایک لائن پر آجائے گی تو قیمتیں بھی کنٹرول میں آجائیں گی مہنگائی ختم ہو کر منفی ہو جائے گی ان شآءاللہ، ڈالر کا ریٹ بھی کنٹرول ہو جائے گا اور بیرونی قرضوں سے بھی نجات ملے گی ان شاءاللہ ۔',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'UrduFont',
+                  fontSize: 20,
+                ),
                 textAlign: TextAlign.right,
               ),
             ],
           ),
         ),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith(
+                        (states) => Colors.redAccent
+                ),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'بند کریں', // 'Close' in Urdu
+                textDirection: TextDirection.rtl,
+                style: TextStyle(fontSize: 24, fontFamily: 'UrduFont', color: Colors.white),
+              ),
+            ),
+          ),
+        ],
       );
     },
   );

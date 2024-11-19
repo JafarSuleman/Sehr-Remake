@@ -10,24 +10,40 @@ import '../../view/home/home.dart';
 import '../color_manager.dart';
 
 class CheckForData extends StatefulWidget {
-  final String? email;
+  String? email;
+  String? whatsApp;
   String? specialPackageName;
   String? specialPackageNameFromOtp;
   String? selectedLocationIdFromOtp;
+  bool? isFromLogout = false;
 
 
-  CheckForData({super.key, this.email,this.specialPackageName,this.specialPackageNameFromOtp,this.selectedLocationIdFromOtp});
+  CheckForData({super.key,this.whatsApp, this.isFromLogout,this.email,this.specialPackageName,this.specialPackageNameFromOtp,this.selectedLocationIdFromOtp});
 
   @override
   State<CheckForData> createState() => _CheckForDataState();
 }
 
 class _CheckForDataState extends State<CheckForData> {
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.isFromLogout == true) {
+      widget.email = null;
+      widget.whatsApp = null;
+      widget.specialPackageName = null;
+      widget.specialPackageNameFromOtp = null;
+      widget.selectedLocationIdFromOtp = null;
+    }
+  }
+
   final UserController _userController = UserController();  // Use a single instance of UserController
 
   @override
   Widget build(BuildContext context) {
     print("Email From CheckData ==> ${widget.email}");
+    print("WhatsApp From CheckData ==> ${widget.whatsApp}");
     print("Check For Data Screen Special Package id ==> ${widget.specialPackageName}");
     print("Check For Data Screen Special Package Id From Otp ==> ${widget.specialPackageNameFromOtp}");
     Future<bool> checkUserData = _checkUserData();
@@ -43,9 +59,11 @@ class _CheckForDataState extends State<CheckForData> {
                 specialPackageName: widget.specialPackageNameFromOtp.toString(),
                 selectedLocationId: widget.selectedLocationIdFromOtp.toString(),
                 email: widget.email,
+                whatsApp: widget.whatsApp,
+
               );
             } else{
-              return PackageScreen(email: widget.email);
+              return PackageScreen(email: widget.email,whatsApp: widget.whatsApp,isFromLogout: widget.isFromLogout,);
             }
           } else if (snapshot.hasError) {
             return Scaffold(

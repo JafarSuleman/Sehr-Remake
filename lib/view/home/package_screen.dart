@@ -5,6 +5,7 @@ import 'package:sehr_remake/controller/package_controller.dart';
 import 'package:sehr_remake/view/home/special_package_screen/special_package_screen.dart';
 import '../../components/loading_widget.dart';
 import '../../components/special_Package_Info_Dialog.dart';
+import '../../components/terms_and_conditions_dialog.dart';
 import '../../utils/asset_manager.dart';
 import '../../utils/color_manager.dart';
 import '../../components/package_item_component.dart';
@@ -13,7 +14,9 @@ import '../collecting_user_data/customer_bio.dart';
 
 class PackageScreen extends StatefulWidget {
   final String? email;
-  PackageScreen({super.key, this.email});
+  final String? whatsApp;
+  bool? isFromLogout=false;
+  PackageScreen({super.key,this.whatsApp, this.email,this.isFromLogout});
 
   @override
   State<PackageScreen> createState() => _PackageScreenState();
@@ -28,7 +31,7 @@ class _PackageScreenState extends State<PackageScreen>
   void initState() {
     super.initState();
 
-    print("Email ==> ${widget.email}");
+    print("Email from Packages screen ==> ${widget.email}");
 
     // Initialize the animation controller for blinking effect
     _blinkAnimationController = AnimationController(
@@ -72,7 +75,7 @@ class _PackageScreenState extends State<PackageScreen>
                   // Add the blinking button at the top
                   GestureDetector(
                     onTap:(){
-                      specialPackageInfoDialog(context,);
+                      specialPackageInfoDialog(context,null,false,widget.email,widget.isFromLogout);
                     },
                     child: AnimatedBuilder(
                       animation: _blinkAnimationController,
@@ -100,10 +103,16 @@ class _PackageScreenState extends State<PackageScreen>
                       title: e.title,
                       description: e.description,
                       pressed: () {
-                        Get.to(AddCustomerBioView(
-                          packageName: e.id,
-                          email: widget.email,
-                        ));
+                        termsAndConditionsDialog(context,
+                            onContinuePressed: () {
+                              Get.back();
+                              Get.to(AddCustomerBioView(
+                                whatsApp: widget.whatsApp,
+                                packageName: e.id,
+                                email: widget.email,
+                              ));
+                            }
+                        );
                       },
                     ),
                   ).toList(),

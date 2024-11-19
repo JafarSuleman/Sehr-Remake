@@ -51,7 +51,7 @@ class OrderController with ChangeNotifier {
     }
   }
 
-  Future<void> getUserOrderModel(String id) async {
+  Future<void> getUserOrderModel(String? id) async {
     try {
       var response = await http.get(
           Uri.parse("${Constants.BASE_URL}${Constants.GET_USER_ORDERS}/$id"));

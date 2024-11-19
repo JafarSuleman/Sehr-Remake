@@ -33,7 +33,7 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   void initState() {
-    context.read<PackageController>().getAllPackages();
+    //context.read<PackageController>().getAllPackages();
     // _splashScreenDelay();
     Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(

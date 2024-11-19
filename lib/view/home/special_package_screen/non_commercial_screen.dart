@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:sehr_remake/view/home/special_package_screen/view_list_screen.dart';
 import '../../../components/loading_widget.dart';
 import '../../../components/special_package_item_component.dart';
+import '../../../components/terms_and_conditions_dialog.dart';
 import '../../../controller/special_package_controller.dart';
 import '../../../controller/user_view_list_controller.dart';
 import '../../../model/special_package_model.dart';
@@ -12,10 +13,11 @@ import '../../../utils/color_manager.dart';
 import '../../collecting_user_data/customer_bio.dart';
 
 class NonCommercialPackagesScreen extends StatefulWidget {
-  final bool? isFromLogin;
+  bool? isFromLogin = false;
+  bool? isFromLogout = false;
   String? email;
   final String selectedLocationId;
-  NonCommercialPackagesScreen({super.key, this.email,this.isFromLogin, required this.selectedLocationId});
+  NonCommercialPackagesScreen({super.key, this.email,this.isFromLogin, required this.selectedLocationId,this.isFromLogout});
 
   @override
   State<NonCommercialPackagesScreen> createState() => _NonCommercialPackagesScreenState();
@@ -55,18 +57,25 @@ class _NonCommercialPackagesScreenState extends State<NonCommercialPackagesScree
                   description: package.description,
                   description2: package.description2,
                   activatePressed: () {
-                    widget.isFromLogin == true ?
-                    Get.to(
-                        AuthCheck(
-                      isFromSpecialPackage: true,
-                      selectedLocationId: widget.selectedLocationId,
-                      specialPackageName: package.id,
-                    )):
-                    Get.to(AddCustomerBioView(
-                      specialPackageName: package.id,
-                      selectedLocationId: widget.selectedLocationId,
-                      email: widget.email,
-                    ));
+                    termsAndConditionsDialog(context,
+                        onContinuePressed: () {
+                          Get.back();
+
+                          widget.isFromLogin == true ?
+                          Get.to(
+                              AuthCheck(
+                                specialPackageName: package.id,
+                                selectedLocationId: widget.selectedLocationId,
+                                isFromSpecialPackage: true,
+                              )):
+                          Get.to(
+                              AddCustomerBioView(
+                                specialPackageName: package.id,
+                                selectedLocationId: widget.selectedLocationId,
+                                email: widget.email,
+                              ));
+                        }
+                    );
                   },                  viewListPressed: () {
                     Get.to(const ViewListScreen());
                   }, type: 'non-commercial',

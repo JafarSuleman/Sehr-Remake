@@ -11,10 +11,11 @@ import 'non_commercial_screen.dart';
 
 class SpecialPackageScreen extends StatefulWidget {
   final bool? isFromLogin;
+  bool? isFromLogout = false;
   final String? email;
   final String selectedLocationId;
 
-  const SpecialPackageScreen({super.key, this.email, this.isFromLogin, required this.selectedLocationId});
+   SpecialPackageScreen({super.key, this.email, this.isFromLogin, required this.selectedLocationId,this.isFromLogout});
 
   @override
   State<SpecialPackageScreen> createState() => _SpecialPackageScreenState();
@@ -49,6 +50,7 @@ class _SpecialPackageScreenState extends State<SpecialPackageScreen> {
                   Get.to(() => CommercialPackagesScreen(
                     email: widget.email,
                     isFromLogin: widget.isFromLogin,
+                    isFromLogout: widget.isFromLogout,
                     selectedLocationId: widget.selectedLocationId,
                   ));
                 },
@@ -69,6 +71,7 @@ class _SpecialPackageScreenState extends State<SpecialPackageScreen> {
                   Get.to(() => NonCommercialPackagesScreen(
                     email: widget.email,
                     isFromLogin: widget.isFromLogin,
+                    isFromLogout: widget.isFromLogout,
                     selectedLocationId: widget.selectedLocationId,
                   ));
                 },

@@ -12,7 +12,7 @@ class PackageController with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   PackageController() {
-    getAllPackages();
+    getAllPackages(); // Only called once here
   }
 
   Future<void> getAllPackages() async {

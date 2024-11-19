@@ -28,11 +28,7 @@ class _EmailVerificationCodeViewState extends State<EmailVerificationCodeView> {
   final TextEditingController _otpController = TextEditingController();
   bool isLoading = false;
 
-  @override
-  void dispose() {
-    super.dispose();
-    _otpController.dispose();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -131,11 +127,16 @@ class _EmailVerificationCodeViewState extends State<EmailVerificationCodeView> {
                         SharedPreferences prefs = await SharedPreferences.getInstance();
                         await prefs.setBool('isEmailAuthenticated', true);
                         await prefs.setString('email', widget.email);
-                        Navigator.pushReplacement(
+                        Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>  AuthCheck(email: widget.email,specialPackageNameFromOtp: widget.specialPackageName,selectedLocationIdFromOtp: widget.selectedLocationId,),
-                            ));
+                            ),
+                              (route) => false,
+                        );
+                        setState(() {
+                          isLoading = false;
+                        });
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Invalid OTP")));

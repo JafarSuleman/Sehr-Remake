@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import '../model/location_model.dart';
 import '../model/special_package_model.dart';
+import '../utils/app/constant.dart';
 import '../utils/color_manager.dart';
 import '../utils/string_manager.dart';
 
@@ -22,7 +23,7 @@ class SpecialPackageController extends GetxController {
   Future<void> fetchCommercialPackages() async {
     try {
       var response = await http.get(
-        Uri.parse('https://sehr-backend.onrender.com/api/v1/specialpackage/get-package?type=commercial'),
+        Uri.parse('${Constants.BASE_URL}${Constants.GET_SPECIAL_PACKAGES}?type=commercial'),
       );
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
@@ -36,12 +37,12 @@ class SpecialPackageController extends GetxController {
       print('Error fetching commercial packages: $e');
     }
   }
-
+  //${Constants.BASE_URL}${Constants.GET_PACKAGES}
   // Fetch non-commercial packages from the API
   Future<void> fetchNonCommercialPackages() async {
     try {
       var response = await http.get(
-        Uri.parse('https://sehr-backend.onrender.com/api/v1/specialpackage/get-package?type=non-commercial'),
+        Uri.parse('${Constants.BASE_URL}${Constants.GET_SPECIAL_PACKAGES}?type=non-commercial'),
       );
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
@@ -56,11 +57,21 @@ class SpecialPackageController extends GetxController {
     }
   }
 
+
+  Future<void> loadSpecialPackages() async {
+    if (nonCommercialPackages.isEmpty) {
+      await fetchNonCommercialPackages();
+    }
+    if (commercialPackages.isEmpty) {
+      await fetchCommercialPackages();
+    }
+  }
+
   // Method to fetch locations
   Future<void> fetchLocations() async {
     try {
       var response = await http.get(
-          Uri.parse('https://sehr-backend.onrender.com/api/v1/location/get-locations'));
+          Uri.parse('${Constants.BASE_URL}${Constants.GET_LOCATIONS}'));
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         List<dynamic> locationList = data['data'];

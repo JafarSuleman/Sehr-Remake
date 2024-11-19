@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:sehr_remake/controller/package_controller.dart';
 import 'package:sehr_remake/controller/user_controller.dart';
+import 'package:sehr_remake/view/home/special_package_screen/selected_special_package_screen.dart';
 import 'package:sehr_remake/view/home/special_package_screen/special_package_screen.dart';
 import '../../components/custom_chip_widget.dart';
 import '../../components/home_button_component.dart';
@@ -15,7 +16,8 @@ import '../../components/package_item_component.dart';
 import '../../utils/color_manager.dart';
 
 class SelectedPackageScreen extends StatefulWidget {
-  const SelectedPackageScreen({super.key});
+  String? selectedSpecialId;
+  SelectedPackageScreen({super.key,this.selectedSpecialId});
 
   @override
   State<SelectedPackageScreen> createState() => _SelectedPackageScreenState();
@@ -67,7 +69,10 @@ class _SelectedPackageScreenState extends State<SelectedPackageScreen> {
               if (userData.specialPackage != null)
                 GestureDetector(
                   onTap: (){
-                    Get.to(SpecialPackageScreen(selectedLocationId: userData.selectedLocationId??""));
+                    if (userData.specialPackage != null &&
+                        userData.specialPackage!.isNotEmpty) {
+                      Get.to(() => SelectedSpecialPackageScreen(specialPackageId: widget.selectedSpecialId,));
+                    }
                   },
                   child: const HomeButtonComponent(
                     btnColor: Colors.redAccent,
