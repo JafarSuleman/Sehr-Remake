@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../utils/color_manager.dart';
 import '../../utils/text_manager.dart';
 
+// New Code
+
 class AlertScreen extends StatelessWidget {
   AlertScreen({super.key});
   List<String> _alerts = [];
