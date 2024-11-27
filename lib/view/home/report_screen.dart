@@ -62,29 +62,35 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   List<OrderModel> getTodayData(List<OrderModel> orders) {
-    // Empty function for now
     return [];
   }
-
   List<OrderModel> getWeeklyData(List<OrderModel> orders) {
-    // Empty function for now
     return [];
   }
-
   List<OrderModel> getMonthlyData(List<OrderModel> orders) {
-    // Empty function for now
     return [];
   }
-
   List<OrderModel> getYearlyData(List<OrderModel> orders) {
-    // Empty function for now
     return [];
   }
-
-
   @override
   Widget build(BuildContext context) {
     List<OrderModel> orders = context.watch<OrderController>().userOrders;
+    List<OrderModel> orderToShow(int selectedSearchType) {
+      switch (selectedSearchType) {
+        case 0:
+          return getTodayData(orders);
+        case 1:
+          return getTodayData(orders);
+        case 2:
+          return getMonthlyData(orders);
+        case 3:
+          return getYearlyData(orders);
+        default:
+          return orders;
+      }
+    }
+
 
     var packages = context.watch<PackageController>().packages;
     var userData = context.watch<UserController>().userModel;
@@ -112,26 +118,12 @@ class _ReportScreenState extends State<ReportScreen> {
 
     print('Activatd Package ==> ${activatedPackage?.id} + ${activatedPackage?.title} + ${activatedPackage?.description} + ${activatedPackage?.salesTarget} +');
 
-    List<OrderModel> orderToShow(int selectedSearchType) {
-      switch (selectedSearchType) {
-        case 0:
-          return getTodayData(orders);
-        case 1:
-          return getTodayData(orders);
-        case 2:
-          return getMonthlyData(orders);
-        case 3:
-          return getYearlyData(orders);
-        default:
-          return orders;
-      }
-    }
 
 
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Report'),
+        title: const Text('User Report'),
         centerTitle: true,
         backgroundColor: ColorManager.gradient1,
       ),

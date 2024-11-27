@@ -23,18 +23,24 @@ class OrderController with ChangeNotifier {
 
   Future<void> getShopOrders(String id) async {
     try {
+      print("Shop ID being passed: $id");
       var response = await http.get(
           Uri.parse("${Constants.BASE_URL}${Constants.GET_SHOP_ORDERS}/$id"));
-      print("resposne : ${response.body}");
+
+      print("API Response: ${response.body}");
+
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body)['orders'];
         _shopOrders = data.map((e) => OrderModel.fromJson(e)).toList();
         notifyListeners();
+      } else {
+        print("Failed to fetch shop orders. Status Code: ${response.statusCode}");
       }
     } catch (e) {
-      print(e.toString());
+      print("Error in getShopOrders: ${e.toString()}");
     }
   }
+
 
   Future<void> getTotalShopOrders(String id) async {
     try {

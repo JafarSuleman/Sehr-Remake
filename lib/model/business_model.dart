@@ -3,6 +3,7 @@ class BussinessModel {
   String? businessName;
   String? ownerName;
   String? mobile;
+  String? email;
   int? sehrCode;
   double? lat;
   double? lon;
@@ -15,6 +16,7 @@ class BussinessModel {
       this.businessName,
       this.ownerName,
       this.mobile,
+      this.email,
       this.sehrCode,
       this.lat,
       this.lon,
@@ -29,6 +31,7 @@ class BussinessModel {
       businessName: json['businessName'],
       ownerName: json['ownerName'],
       mobile: json['mobile'],
+      email: json['email'],
       sehrCode: json['sehrCode'],
       lat: json['lat'],
       lon: json['lon'],
@@ -44,6 +47,7 @@ class BussinessModel {
       'businessName': businessName,
       'ownerName': ownerName,
       'mobile': mobile,
+      'email': email,
       'sehrCode': sehrCode,
       'lat': lat,
       'lon': lon,

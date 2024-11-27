@@ -14,7 +14,7 @@ class AuthCheck extends StatefulWidget {
   String? phone;
   String? whatsApp;
   String? email;
-   AuthCheck({super.key,this.email,this.phone,this.isFromSpecialPackage,this.specialPackageName,this.specialPackageNameFromOtp,this.selectedLocationId,this.selectedLocationIdFromOtp,this.isFromLogout,this.whatsApp});
+  AuthCheck({super.key,this.email,this.phone,this.isFromSpecialPackage,this.specialPackageName,this.specialPackageNameFromOtp,this.selectedLocationId,this.selectedLocationIdFromOtp,this.isFromLogout,this.whatsApp});
   @override
   State<AuthCheck> createState() => _AuthCheckState();
 }

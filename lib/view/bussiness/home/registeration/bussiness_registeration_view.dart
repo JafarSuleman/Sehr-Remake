@@ -1,4 +1,5 @@
 import 'dart:convert' as convert;
+import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,8 @@ import '../../../../utils/size_config.dart';
 import 'package:http/http.dart' as http;
 
 class AddBusinessDetailsView extends StatefulWidget {
-  const AddBusinessDetailsView({super.key});
+  String? identifier;
+  AddBusinessDetailsView({super.key,required this.identifier});
 
   @override
   State<AddBusinessDetailsView> createState() => _AddBusinessDetailsViewState();
@@ -39,9 +41,7 @@ class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
         });
       });
     } else if (status.isDenied) {
-      // Permission denied. You can handle this case by showing a dialog or message to the user.
     } else if (status.isPermanentlyDenied) {
-      // Permission permanently denied. You can open the app settings to allow the user to enable location access.
       openAppSettings();
     }
   }
@@ -75,18 +75,29 @@ class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
 
   bool nodata = false;
 
-  Future apicall() async {
-    var responseofdata =
-        await http.get(Uri.parse("http://109.123.236.174:3000/api/category"));
+  Future<void> apicall() async {
+    var responseofdata = await http.get(
+      Uri.parse("${Constants.BASE_URL}/api/v1/category"),
+    );
 
-    datatest = convert.jsonDecode(responseofdata.body);
-    _list.add(datatest == null ? [] : datatest!.values.toList());
-    _list[0][0].forEach((element) {
-      print(element);
-      filterlist.add(element);
-    });
+    if (responseofdata.statusCode == 200) {
+      var datatest = jsonDecode(responseofdata.body);
 
-    return datatest;
+      // Access the 'categories' list directly
+      var categoriesList = datatest['categories'];
+
+      // Check if categoriesList is not null and is a list
+      if (categoriesList != null && categoriesList is List) {
+        categoriesList.forEach((element) {
+          print(element);
+          filterlist.add(element);
+        });
+      } else {
+        print('No categories found.');
+      }
+    } else {
+      print('Failed to load categories.');
+    }
   }
 
   String? selectedCateogry;
@@ -273,7 +284,7 @@ class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
                                     _description.text.isEmpty ||
                                     selectedCateogry == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
+                                      const SnackBar(
                                           content: Text(
                                               "Fill All the required fields")));
                                   return;
@@ -294,7 +305,7 @@ class _AddBusinessDetailsViewState extends State<AddBusinessDetailsView> {
                                                   lat: position!.latitude,
                                                   lon: position!.longitude,
                                                   categoryId:
-                                                      selectedCateogry)),
+                                                      selectedCateogry), identifier: widget.identifier,),
                                     ));
                               },
                               text: 'Next',

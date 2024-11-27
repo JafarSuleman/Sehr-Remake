@@ -25,8 +25,9 @@ import '../../utils/color_manager.dart';
 import '../../utils/size_config.dart';
 
 class UploadBussinessPhoto extends StatefulWidget {
+  String? identifier;
   final BussinessModel model;
-  const UploadBussinessPhoto({super.key, required this.model});
+   UploadBussinessPhoto({super.key, required this.model, required this.identifier});
 
   @override
   State<UploadBussinessPhoto> createState() => _UplaodProfilePhotoViewState();
@@ -92,7 +93,7 @@ class _UplaodProfilePhotoViewState extends State<UploadBussinessPhoto> {
                     ontap: () async {
                       if (file == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Add An Image First")));
+                            const SnackBar(content: Text("Add An Image First")));
                         return;
                       }
 
@@ -106,7 +107,7 @@ class _UplaodProfilePhotoViewState extends State<UploadBussinessPhoto> {
                         });
 
                         String res = await BussinessController()
-                            .createBussinessData(widget.model, file as XFile);
+                            .createBussinessData(widget.model, file as XFile,widget.identifier!);
 
                         setState(() {
                           isLoading = false;
@@ -115,7 +116,7 @@ class _UplaodProfilePhotoViewState extends State<UploadBussinessPhoto> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CheckForBussinesData(),
+                              builder: (context) => CheckForBusinessData(identifier: widget.identifier,),
                             ));
                         print(res);
                       } else {
@@ -123,6 +124,7 @@ class _UplaodProfilePhotoViewState extends State<UploadBussinessPhoto> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => BussinessPackageScreen(
+                                identifier: widget.identifier,
                                   bussinessModel: widget.model,
                                   imgFile: file as XFile),
                             ));

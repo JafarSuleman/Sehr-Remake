@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:sehr_remake/model/business_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:sehr_remake/model/order_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../components/app_button_widget.dart';
 
 import '../../../components/custom_chip_widget.dart';
@@ -20,14 +21,17 @@ import 'package:flutter/widgets.dart';
 import 'order_proccessing.dart';
 
 class OrderPlacingView extends StatefulWidget {
+  String identifier;
   BussinessModel model;
-  OrderPlacingView(this.model);
+  OrderPlacingView(this.model, this.identifier);
 
   @override
   State<OrderPlacingView> createState() => _OrderPlacingViewState();
 }
 
 class _OrderPlacingViewState extends State<OrderPlacingView> {
+
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -207,8 +211,13 @@ class _OrderPlacingViewState extends State<OrderPlacingView> {
                                     ontap: () async {
                                       print(widget.model.id);
                                       print(amountcontroller.text);
-                                      print(FirebaseAuth
-                                          .instance.currentUser!.phoneNumber);
+                                      print("User Id in order view ==> ${widget.identifier}");
+                                      // SharedPreferences prefs = await SharedPreferences.getInstance();
+                                      // String authMethod = prefs.getString('authMethod') ?? '';
+                                      // String apiIdentifier = (authMethod == 'email') ? widget.identifier : widget.identifier.replaceFirst("+92", "0");
+                                      //
+                                      // print(FirebaseAuth
+                                      //     .instance.currentUser!.phoneNumber);
                                       try {
                                         var response = await http.post(
                                             Uri.parse(
@@ -219,9 +228,7 @@ class _OrderPlacingViewState extends State<OrderPlacingView> {
                                             body: jsonEncode({
                                               "shopid":
                                                   widget.model.id.toString(),
-                                              "userid": FirebaseAuth.instance
-                                                  .currentUser!.phoneNumber
-                                                  .toString(),
+                                              "userid": widget.identifier.toString(),
                                               "amount": int.parse(
                                                   amountcontroller.text)
                                             }));

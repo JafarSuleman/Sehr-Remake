@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-
 import '../utils/color_manager.dart';
 import '../utils/size_config.dart';
 
 class CustomListTileWidget extends StatelessWidget {
+
   const CustomListTileWidget({
     super.key,
-    // required this.items,
     required this.leading,
     required this.title,
     required this.trailing,
   });
-  // final List<ShopDataModel> items;
+
   final Widget leading;
   final Widget title;
   final Widget trailing;
@@ -19,9 +18,12 @@ class CustomListTileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: getProportionateScreenHeight(100),
-      width: SizeConfig.screenWidth,
-      alignment: Alignment.center,
+      width: double.infinity,
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.symmetric(
+        vertical: getProportionateScreenHeight(10),
+        horizontal: getProportionateScreenWidth(15),
+      ),
       decoration: ShapeDecoration(
         color: ColorManager.white,
         shape: RoundedRectangleBorder(
@@ -31,30 +33,29 @@ class CustomListTileWidget extends StatelessWidget {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: getProportionateScreenHeight(18),
-              horizontal: getProportionateScreenWidth(15),
-            ),
+          SizedBox(
+            width: getProportionateScreenWidth(60),
+            height: getProportionateScreenHeight(60),
             child: leading,
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: getProportionateScreenHeight(18),
-            ),
-            child: SizedBox(
-              width: getProportionateScreenWidth(140),
-              child: title,
-            ),
+          SizedBox(width: getProportionateScreenWidth(15)),
+          Expanded(
+            child: title,
           ),
-          const Spacer(),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: getProportionateScreenHeight(15),
-              horizontal: getProportionateScreenWidth(15),
-            ),
-            child: trailing,
+          SizedBox(width: getProportionateScreenWidth(15)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: getProportionateScreenWidth(100),
+                ),
+                child: trailing,
+              ),
+            ],
           ),
         ],
       ),

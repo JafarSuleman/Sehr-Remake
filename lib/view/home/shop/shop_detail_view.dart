@@ -17,9 +17,10 @@ import 'order_view.dart';
 
 // ignore: must_be_immutable
 class ShopDetailsView extends StatefulWidget {
+  String identifier;
   final BussinessModel model;
   final String distance;
-  ShopDetailsView({required this.model, required this.distance});
+  ShopDetailsView({required this.model, required this.distance, required this.identifier});
   @override
   State<ShopDetailsView> createState() => _ShopDetailsViewState();
 }
@@ -155,7 +156,7 @@ class _ShopDetailsViewState extends State<ShopDetailsView> {
                             ),
                             buildHorizontalSpace(13),
                             kTextBentonSansReg(
-                              '${widget.distance}',
+                              widget.distance,
                               color: ColorManager.textGrey.withOpacity(0.8),
                             ),
                           ],
@@ -209,7 +210,7 @@ class _ShopDetailsViewState extends State<ShopDetailsView> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          OrderPlacingView(widget.model),
+                                          OrderPlacingView(widget.model,  widget.identifier,),
                                     ));
                               },
                               height: getProportionateScreenHeight(40),

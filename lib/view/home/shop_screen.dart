@@ -185,7 +185,7 @@ class _ShopViewScreenState extends State<ShopViewScreen> {
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(25.0),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
                           const Icon(Icons.search, color: Colors.grey),
@@ -233,9 +233,10 @@ class _ShopViewScreenState extends State<ShopViewScreen> {
                                   true, // Show the current location button
                             ),
                           )
-                        : Center(
+                        : const Center(
                             child: CircularProgressIndicator(),
                           ),
+                    const SizedBox(height: 10,),
                     Expanded(
                         child: ListView.builder(
                             itemCount: _searchController.text.isEmpty
@@ -290,12 +291,12 @@ class _ShopViewScreenState extends State<ShopViewScreen> {
                                       MaterialPageRoute(
                                           builder: (context) => ShopDetailsView(
                                                 model: sortedBussiness[index],
-                                                distance: formattedDistance,
+                                                distance: formattedDistance, identifier: '',
                                               )));
                                 },
                                 child: Card(
                                   elevation: 4.0,
-                                  margin: EdgeInsets.all(8.0),
+                                  margin: const EdgeInsets.all(8.0),
                                   child: ListTile(
                                     leading: SizedBox(
                                       width: 56.0,
@@ -316,7 +317,7 @@ class _ShopViewScreenState extends State<ShopViewScreen> {
                                       sortedBussiness[index]
                                           .businessName
                                           .toString(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
                                     subtitle: Text(formattedDistance),
@@ -334,8 +335,8 @@ class _ShopViewScreenState extends State<ShopViewScreen> {
                                                 as double));
                                         print('Go to shop button pressed');
                                       },
-                                      child: Text(
-                                        'Go to',
+                                      child: const Text(
+                                        'Go to',style: TextStyle(color: Colors.white),
                                       ),
                                     ),
                                   ),

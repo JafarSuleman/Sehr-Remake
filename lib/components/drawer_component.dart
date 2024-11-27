@@ -17,11 +17,13 @@ class DrawerComponent extends StatelessWidget {
   final String imgUrl;
   final String name;
   final String phone;
+  final String? identifier;
   const DrawerComponent({
     super.key,
     required this.name,
     required this.phone,
     required this.imgUrl,
+    required this.identifier
   });
 
   Future<void> _handleLogout(BuildContext context) async {
@@ -120,7 +122,7 @@ class DrawerComponent extends StatelessWidget {
             onTap: () => Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const CheckForBussinesData(),
+                builder: (context) =>  CheckForBusinessData(identifier: identifier,),
               ),
             ),
             child: Container(

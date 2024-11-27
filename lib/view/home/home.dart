@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart' hide CarouselController;
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:geolocator/geolocator.dart';
@@ -14,17 +13,15 @@ import 'package:sehr_remake/utils/app/constant.dart';
 import 'package:sehr_remake/view/home/report_screen.dart';
 import 'package:sehr_remake/view/home/shop/shop_detail_view.dart';
 import 'package:sehr_remake/view/home/shop_screen.dart';
+import 'package:sehr_remake/view/home/silver_appbar_delicate.dart';
 import 'package:sehr_remake/view/home/special_package_screen/selected_special_package_screen.dart';
-import 'package:sehr_remake/view/home/special_package_screen/special_package_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/drawer_component.dart';
 import '../../components/home_button_component.dart';
 import '../../components/loading_widget.dart';
 import '../../components/special_Package_Info_Dialog.dart';
-import '../../controller/package_controller.dart';
 import '../../utils/asset_manager.dart';
 import '../../utils/color_manager.dart';
-import '../../utils/routes/routes.dart';
 import '../../utils/text_manager.dart';
 import '../../utils/values_manager.dart';
 import '../bussiness/home/registeration/bussiness_registeration_view.dart';
@@ -45,21 +42,26 @@ class _HomeScreenState extends State<HomeScreen>
   late AnimationController _blinkAnimationController;
   bool _isLoading = true;
   bool showBlinking = true;
+  String? identifier;
 
   Future<void> requestLocationPermission() async {
     final PermissionStatus status = await Permission.location.request();
 
     if (status.isGranted) {
-      getCurrentLocation().then((value) {
+      try {
+        final location = await getCurrentLocation();
         setState(() {
-          position = value;
+          position = location;
         });
-        _getLocationName(value);
-      });
+        _getLocationName(location);
+      } catch (e) {
+        print("Error fetching location: $e");
+      }
     } else if (status.isDenied) {
-      // Permission denied. You can handle this case by showing a dialog or message to the user.
+      print("Location permission denied");
+      // Handle UI updates when permission is denied
     } else if (status.isPermanentlyDenied) {
-      // Permission permanently denied. You can open the app settings to allow the user to enable location access.
+      print("Location permission permanently denied. Opening settings...");
       openAppSettings();
     }
   }
@@ -109,10 +111,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<Position> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    return position;
+    try {
+      return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+    } catch (e) {
+      print("Error in getCurrentLocation: $e");
+      rethrow;
+    }
   }
 
   // List<BussinessModel> filterNearbyShops(
@@ -159,7 +165,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
+    getIdentifier();
+
+    requestLocation();
 
     _initializeData();
 
@@ -168,75 +176,28 @@ class _HomeScreenState extends State<HomeScreen>
       duration: const Duration(milliseconds: 1000),
     )..repeat(reverse: true);
 
-    // context
-    //     .read<UserController>()
-    //     .getUserData(FirebaseAuth.instance.currentUser!.phoneNumber.toString(),context);
-
     super.initState();
-
-    // Initialize the animation controller
 
     if (showBlinking) {
       _blinkAnimationController.repeat(reverse: true);
     }
 
     context.read<BussinessController>().getBussinesss();
-    //context.read<PackageController>().fetchSpecialPackages();
-
-    // context.read<PackageController>().addListener(_updateBlinkingState);
-    // context.read<UserController>().addListener(_updateBlinkingState);
-    //
-    // // Initial update of blinking state
-    // _updateBlinkingState();
-    // Future.delayed(Duration.zero).then((value) async {
-    //   await requestLocationPermission();
-    //
-    //   SharedPreferences prefs = await SharedPreferences.getInstance();
-    //   String identifier = prefs.getString('identifier') ?? '';
-    //
-    //
-    //   await context.read<UserController>().getUserData(identifier,context);
-    // });
-
-    // context
-    //     .read<UserController>()
-    //     .getUserData(FirebaseAuth.instance.currentUser!.phoneNumber.toString(),context);
   }
 
-  // void _updateBlinkingState() {
-  //   final specialPackages = context.read<PackageController>().specialPackages;
-  //   final userProvider = context.read<UserController>().userModel;
-  //   List<String>? activatedSpecialPackageIds = userProvider.activatedSpecialPackageIds;
-  //
-  //   bool shouldBlink = false;
-  //
-  //   if (specialPackages.isNotEmpty) {
-  //     for (var package in specialPackages) {
-  //       if (activatedSpecialPackageIds == null || !activatedSpecialPackageIds.contains(package.id)) {
-  //         // There is a special package that the user hasn't activated
-  //         shouldBlink = true;
-  //         break;
-  //       }
-  //     }
-  //   }
-  //
-  //   setState(() {
-  //     showBlinking = shouldBlink;
-  //     if (showBlinking) {
-  //       _blinkAnimationController.repeat(reverse: true);
-  //     } else {
-  //       _blinkAnimationController.stop();
-  //     }
-  //   });
-  // }
+  Future<void> requestLocation() async {
+    await requestLocationPermission();
+  }
+
+  Future<void> getIdentifier() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    identifier = prefs.getString('identifier') ?? '';
+  }
 
   Future<void> _initializeData() async {
-    // Ensure loading state at the beginning
     setState(() {
       _isLoading = true;
     });
-
-    await requestLocationPermission();
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String identifier = prefs.getString('identifier') ?? '';
@@ -271,14 +232,12 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _blinkAnimationController.dispose();
-    // Remove listeners to prevent memory leaks
-    // context.read<PackageController>().removeListener(_updateBlinkingState);
-    // context.read<UserController>().removeListener(_updateBlinkingState);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Get Identifier ==> $identifier");
     if (_isLoading) {
       return Scaffold(
         body: Center(child: loadingSpinkit(ColorManager.gradient1, 80)),
@@ -289,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       print(userProvider.firstName);
       print("Special Package ==> ${userProvider.specialPackage}");
+      print("Package ==> ${userProvider.package}");
 
       if (userProvider.package == "653e1c4c9818104d6fc5797f" ||
           userProvider.package == "653e1c4c9818104d6fc57980" ||
@@ -297,8 +257,7 @@ class _HomeScreenState extends State<HomeScreen>
           userProvider.package == "653e1e979818104d6fc5798b") {
         context
             .watch<BussinessController>()
-            .checkForBussinessData(
-                FirebaseAuth.instance.currentUser!.phoneNumber.toString())
+            .checkForBusinessData(identifier!)
             .then((value) {
           if (value == true) {
             return;
@@ -306,7 +265,9 @@ class _HomeScreenState extends State<HomeScreen>
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => const AddBusinessDetailsView()));
+                  builder: (context) => AddBusinessDetailsView(
+                        identifier: identifier,
+                      )));
         });
       }
       var business = context.watch<BussinessController>().bussinessModel;
@@ -318,297 +279,411 @@ class _HomeScreenState extends State<HomeScreen>
                     b, position!.latitude, position!.longitude)));
       }
 
+      print("User Name ==> ${userProvider.firstName} ${userProvider.lastName}");
+
       return Scaffold(
         key: _scafoldKey,
         drawer: DrawerComponent(
-            name: "${userProvider.firstName} ${userProvider.lastName}",
-            phone: userProvider.email != null
-                ? userProvider.email.toString()
-                : userProvider.mobile.toString(),
-            imgUrl: userProvider.avatar.toString()),
+          name: "${userProvider.firstName} ${userProvider.lastName}",
+          phone: userProvider.email != null
+              ? userProvider.email.toString()
+              : userProvider.mobile.toString(),
+          imgUrl: userProvider.avatar.toString(),
+          identifier: identifier.toString(),
+        ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppMargin.m10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          _scafoldKey.currentState!.openDrawer();
-                        },
-                        icon: Icon(
-                          Icons.horizontal_split_sharp,
-                          color: ColorManager.gradient1,
-                          size: 25,
-                        )),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          child: CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: SliverAppBarDelegate(
+                  minHeight:
+                      kToolbarHeight + AppMargin.m10 * 2, // Adjust as needed
+                  maxHeight:
+                      kToolbarHeight + AppMargin.m10 * 2, // Adjust as needed
+                  child: Container(
+                    color: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppMargin.m10),
+                    child: Row(
                       children: [
-                        Text(
-                          "Welcome ${userProvider.firstName} ${userProvider.lastName}",
-                          style: TextStyleManager.mediumTextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            letterSpacing: 0,
-                          ),
-                        ),
+                        IconButton(
+                            onPressed: () {
+                              _scafoldKey.currentState!.openDrawer();
+                            },
+                            icon: Icon(
+                              Icons.horizontal_split_sharp,
+                              color: ColorManager.gradient1,
+                              size: 25,
+                            )),
                         const SizedBox(
-                          height: AppMargin.m6,
+                          width: 20,
                         ),
-                        Text(
-                          _currentLocationName == null
-                              ? "Loading Location..."
-                              : _currentLocationName!,
-                          style: TextStyleManager.lightTextStyle(
-                              fontSize: 11, textColor: ColorManager.textGrey),
-                        )
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Welcome ${userProvider.firstName} ${userProvider.lastName}",
+                              style: TextStyleManager.mediumTextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: AppMargin.m6,
+                            ),
+                            Text(
+                              _currentLocationName == null
+                                  ? "Loading Location..."
+                                  : _currentLocationName!,
+                              style: TextStyleManager.lightTextStyle(
+                                  fontSize: 11,
+                                  textColor: ColorManager.textGrey),
+                            )
+                          ],
+                        ),
+                        const Spacer(),
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.notifications_active_outlined,
+                              size: 35,
+                              color: ColorManager.gradient2,
+                            ))
                       ],
-                    ),
-                    const Spacer(),
-                    IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.notifications_active_outlined,
-                          size: 35,
-                          color: ColorManager.gradient2,
-                        ))
-                  ],
-                ),
-
-                const SizedBox(
-                  height: AppMargin.m16,
-                ),
-                //Banner Start
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Container(
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.of(context).size.width / 2,
-                      ),
-                      child: FlutterCarousel(
-                        options: CarouselOptions(
-                          autoPlay: true,
-                          autoPlayInterval: const Duration(seconds: 3),
-                          disableCenter: true,
-                          viewportFraction:
-                              deviceSize.width > 800.0 ? 0.8 : 1.0,
-                          height: deviceSize.height * 0.45,
-                          enableInfiniteScroll: true,
-                          slideIndicator: const CircularSlideIndicator(),
-                        ),
-                        items: [
-                          Image.network("${Constants.BASE_URL}/uploads/11.png"),
-                          Image.network("${Constants.BASE_URL}/uploads/22.png"),
-                          Image.network("${Constants.BASE_URL}/uploads/33.png")
-                        ],
-                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: AppMargin.m17),
-
-                //Banner End
-                GestureDetector(
-                  onTap: () {
-                    if (userProvider.specialPackage != null &&
-                        userProvider.specialPackage!.isNotEmpty) {
-                      Get.to(() => SelectedSpecialPackageScreen(specialPackageId: userProvider.specialPackage,));
-                    } else {
-                      specialPackageInfoDialog(
-                          context, userProvider.specialPackage);
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        userProvider.specialPackage == null ||
-                                userProvider.specialPackage!.isEmpty
-                            ? AnimatedBuilder(
-                                animation: _blinkAnimationController,
-                                builder: (context, child) {
-                                  return Opacity(
-                                    opacity: showBlinking
-                                        ? _blinkAnimationController.value
-                                        : 1.0,
-                                    child: HomeButtonComponent(
-                                      btnColor:
-                                          Colors.redAccent.withOpacity(0.5),
+              ),
+              // Scrollable content
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppMargin.m10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: AppMargin.m16,
+                      ),
+                      //Banner Start
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.width / 2,
+                            ),
+                            child: FlutterCarousel(
+                              options: CarouselOptions(
+                                autoPlay: true,
+                                autoPlayInterval: const Duration(seconds: 3),
+                                disableCenter: true,
+                                viewportFraction:
+                                    deviceSize.width > 800.0 ? 0.8 : 1.0,
+                                height: deviceSize.height * 0.45,
+                                enableInfiniteScroll: true,
+                                slideIndicator: const CircularSlideIndicator(),
+                              ),
+                              items: [
+                                Image.network(
+                                    "${Constants.BASE_URL}/uploads/11.png"),
+                                Image.network(
+                                    "${Constants.BASE_URL}/uploads/22.png"),
+                                Image.network(
+                                    "${Constants.BASE_URL}/uploads/33.png")
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppMargin.m17),
+                      //Banner End
+                      GestureDetector(
+                        onTap: () {
+                          if (userProvider.specialPackage != null &&
+                              userProvider.specialPackage!.isNotEmpty) {
+                            Get.to(() => SelectedSpecialPackageScreen(
+                                  specialPackageId: userProvider.specialPackage,
+                                ));
+                          } else {
+                            specialPackageInfoDialog(
+                                context, userProvider.specialPackage);
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 10),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              userProvider.specialPackage == null ||
+                                      userProvider.specialPackage!.isEmpty
+                                  ? AnimatedBuilder(
+                                      animation: _blinkAnimationController,
+                                      builder: (context, child) {
+                                        return Opacity(
+                                          opacity: showBlinking
+                                              ? _blinkAnimationController.value
+                                              : 1.0,
+                                          child: HomeButtonComponent(
+                                            btnColor: Colors.redAccent
+                                                .withOpacity(0.5),
+                                            width: double.infinity,
+                                            imagePath: AppIcons.specialIcon,
+                                            iconColor: Colors.white,
+                                            btnTextColor: Colors.white,
+                                            name: "Special Package",
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : const HomeButtonComponent(
+                                      btnColor: Colors.redAccent,
                                       width: double.infinity,
                                       imagePath: AppIcons.specialIcon,
                                       iconColor: Colors.white,
                                       btnTextColor: Colors.white,
                                       name: "Special Package",
                                     ),
-                                  );
-                                },
-                              )
-                            : const HomeButtonComponent(
-                                btnColor: Colors.redAccent,
-                                width: double.infinity,
-                                imagePath: AppIcons.specialIcon,
-                                iconColor: Colors.white,
-                                btnTextColor: Colors.white,
-                                name: "Special Package",
-                              ),
-
-                        // Positioned(
-                        //     right: -25,
-                        //     bottom: 0,
-                        //     child: Image.asset('assets/images/offer-Gif.gif',scale: 7.5,))
-                      ],
-                    ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppMargin.m17),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(AlertScreen());
+                            },
+                            child: const HomeButtonComponent(
+                                name: "Alerts",
+                                iconData: Icons.notification_important_rounded),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SelectedPackageScreen(
+                                      selectedSpecialId:
+                                          userProvider.specialPackage,
+                                    ),
+                                  ));
+                            },
+                            child: const HomeButtonComponent(
+                                name: "Packages", iconData: Icons.local_offer),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: AppMargin.m18,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(ReportScreen(
+                                userId: userProvider.id,
+                              ));
+                            },
+                            child: const HomeButtonComponent(
+                                name: "Reports",
+                                iconData: Icons.history_edu_rounded),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(const ShopViewScreen());
+                            },
+                            child: const HomeButtonComponent(
+                                name: "Shops", iconData: Icons.store),
+                          )
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: AppMargin.m17),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Get.to(AlertScreen());
-                        //Get.toNamed(Routes.alertRoute);
-                      },
-                      child: const HomeButtonComponent(
-                          name: "Alerts",
-                          iconData: Icons.notification_important_rounded),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  SelectedPackageScreen(selectedSpecialId: userProvider.specialPackage,),
-                            ));
-                      },
-                      child: const HomeButtonComponent(
-                          name: "Packages", iconData: Icons.local_offer),
-                    )
-                  ],
+              ),
+              // Shops Near You Section Title
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppMargin.m10, vertical: AppMargin.m20),
+                  child: Text(
+                    "Shops Near You",
+                    style: TextStyleManager.mediumTextStyle(fontSize: 16),
+                  ),
                 ),
+              ),
+              // Shops Near You Grid
+              position != null && business != null
+                  ? business.isEmpty
+                      ? const SliverToBoxAdapter(
+                          child: Padding(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: AppMargin.m10),
+                            child: Text(
+                              "No Shops Here!",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
+                        )
+                      : SliverPadding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppMargin.m10),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 25,
+                              crossAxisSpacing: 25,
+                              mainAxisExtent: 220,
+                            ),
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                List<BussinessModel> nearByShops = business;
 
-                const SizedBox(
-                  height: AppMargin.m18,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Get.to(ReportScreen(
-                          userId: userProvider.id,
-                        ));
-                        //Get.toNamed(Routes.reportRoute);
-                      },
-                      child: const HomeButtonComponent(
-                          name: "Reports", iconData: Icons.history_edu_rounded),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Get.to(const ShopViewScreen());
-                        //Get.toNamed(Routes.shopviewRoute);
-                      },
-                      child: const HomeButtonComponent(
-                          name: "Shops", iconData: Icons.store),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: AppMargin.m20,
-                ),
-                Text(
-                  "Shops Near You",
-                  style: TextStyleManager.mediumTextStyle(fontSize: 16),
-                ),
-                const SizedBox(
-                  height: AppMargin.m20,
-                ),
-                //changed bussiness near loc strat
-                position != null
-                    ? business.length.bitLength == 0
-                        ? const Text(
-                            "No Shops Here !",
-                            style: TextStyle(fontSize: 16),
-                          )
-                        : Expanded(
-                            child: GridView.builder(
-                                itemCount: business.length.bitLength,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        mainAxisSpacing: 25,
-                                        crossAxisSpacing: 25,
-                                        mainAxisExtent: 200),
-                                itemBuilder: (context, index) {
-                                  List<BussinessModel> nearByShops = business;
+                                final shop = nearByShops[index];
 
-                                  final distance = calculateDistance(
-                                    position!.latitude,
-                                    position!.longitude,
-                                    nearByShops[index].lat as double,
-                                    nearByShops[index].lon as double,
-                                  );
-                                  final formattedDistance = distance < 1
-                                      ? '${(distance * 1000).toStringAsFixed(2)} meters away'
-                                      : '${distance.toStringAsFixed(2)} km away';
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                ShopDetailsView(
-                                                    model: nearByShops[index],
-                                                    distance:
-                                                        formattedDistance),
-                                          ));
-                                    },
-                                    child: GridTile(
-                                      header: SizedBox(
-                                        height: 150,
-                                        child: CachedNetworkImage(
-                                            fit: BoxFit.cover,
-                                            imageUrl:
-                                                "${Constants.BASE_URL}/${nearByShops[index].logo.toString()}",
-                                            placeholder: (context, url) =>
-                                                Image.network(
-                                                    "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
-                                                    fit: BoxFit.fill),
-                                            errorWidget: (context, url, error) {
-                                              return Image.network(
-                                                  "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
-                                                  fit: BoxFit.fill);
-                                            }),
-                                      ),
-                                      child: const Text(""),
-                                      footer: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(nearByShops[index]
-                                              .businessName
-                                              .toString()),
-                                          Text(formattedDistance)
-                                        ],
-                                      ),
+                                // Ensure shop.lat and shop.lon are not null
+                                if (shop.lat == null || shop.lon == null) {
+                                  return SizedBox();
+                                }
+
+                                final distance = calculateDistance(
+                                  position!.latitude,
+                                  position!.longitude,
+                                  shop.lat as double,
+                                  shop.lon as double,
+                                );
+                                final formattedDistance = distance < 1
+                                    ? '${(distance * 1000).toStringAsFixed(2)} meters away'
+                                    : '${distance.toStringAsFixed(2)} km away';
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ShopDetailsView(
+                                              model: shop,
+                                              distance: formattedDistance, identifier: userProvider.id??"",),
+                                        ));
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.withOpacity(0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(2, 4),
+                                        ),
+                                      ],
                                     ),
-                                  );
-                                }),
-                          )
-                    : const Center(
-                        child: Text("Enable Location to get Shops"),
-                      )
-              ],
-            ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Fixed-size image container
+                                        ClipRRect(
+                                          borderRadius:
+                                              const BorderRadius.vertical(
+                                            top: Radius.circular(12),
+                                          ),
+                                          child: Container(
+                                            height:
+                                                160, // Fixed height for the image
+                                            width: double
+                                                .infinity, // Image stretches to the card's width
+                                            color: Colors.grey[
+                                                200], // Placeholder background color
+                                            child: CachedNetworkImage(
+                                                fit: BoxFit
+                                                    .cover, // Ensures consistent scaling
+                                                imageUrl:
+                                                    "${Constants.BASE_URL}/${shop.logo.toString()}",
+                                                placeholder: (context, url) =>
+                                                    Image.network(
+                                                        "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
+                                                        fit: BoxFit.fill),
+                                                errorWidget:
+                                                    (context, url, error) {
+                                                  return Image.network(
+                                                      "https://media.istockphoto.com/id/913241794/vector/green-store-flat-design-environmental-icon.jpg?s=612x612&w=0&k=20&c=aBl5y54IVOQU__JocerMWJHTEsa3PBR1eZyBlShjwKA=",
+                                                      fit: BoxFit.fill);
+                                                }),
+                                          ),
+                                        ),
+                                        // Fixed-size text container
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // Shop Name with ellipsis
+                                              SizedBox(
+                                                height:
+                                                    20, // Fixed height for shop name
+                                                child: Text(
+                                                  shop.businessName.toString(),
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                    color: Colors.black87,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              // Distance with fixed height
+                                              SizedBox(
+                                                height:
+                                                    20, // Fixed height for distance
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.location_on,
+                                                      size: 16,
+                                                      color: Colors.grey,
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      formattedDistance,
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.grey[700],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              childCount: business.length,
+                            ),
+                          ),
+                        )
+                  : const SliverToBoxAdapter(
+                      child: Center(
+                        child: Text("Loading..."),
+                      ),
+                    ),
+            ],
           ),
         ),
       );

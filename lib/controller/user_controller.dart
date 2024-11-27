@@ -304,33 +304,58 @@ class UserController with ChangeNotifier {
     return res;
   }
 
-  Future<UserM.User> getUserByID(String id) async {
-    UserM.User model = UserM.User();    try {
-      var response = await http.get(Uri.parse(
-          "${Constants.BASE_URL}${Constants.GET_USER_DATA_BYID}/$id"));
-      print(response.body);
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
 
-        print(data);
-        model = UserM.User.fromJson(data);
-        return model;
+  Future<UserM.User?> getUserByID(String id) async {
+    try {
+      var response = await http.get(
+        Uri.parse("${Constants.BASE_URL}${Constants.GET_USER_DATA_BYID}/$id"),
+      );
+      print("Response from getUserByID for ID $id: ${response.body}");
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        print("Parsed data for ID $id: $jsonResponse");
+
+        // Extract the user data from the 'data' key
+        var userData = jsonResponse['data'];
+        if (userData != null) {
+          return UserM.User.fromJson(userData);
+        } else {
+          print("User data is null for ID $id");
+          return null;
+        }
+      } else {
+        print("Failed to get user data for ID $id. Status code: ${response.statusCode}");
+        return null;
       }
     } catch (e) {
-      print(e.toString());
+      print("Exception in getUserByID for ID $id: ${e.toString()}");
+      return null;
     }
-    return model;
   }
 
-  Future<List<UserM.User>> getSelectedUser(List<OrderModel> orders) async {
-    List<UserM.User> users = [];
-    print(orders[0]);
+  Future<List<UserM.User?>> getSelectedUser(List<OrderModel> orders) async {
+    List<UserM.User?> users = [];
+    List<Future<UserM.User?>> userFutures = [];
 
     for (int i = 0; i < orders.length; i++) {
-      var user = await getUserByID(orders[i].userid.toString());
-
-      users.add(user);
+      String userId = orders[i].userid ?? '';
+      if (userId.isNotEmpty) {
+        userFutures.add(getUserByID(userId));
+      } else {
+        print("User ID is empty for order: ${orders[i].toJson()}");
+        users.add(null);
+      }
     }
+
+    try {
+      List<UserM.User?> fetchedUsers = await Future.wait(userFutures);
+      users.addAll(fetchedUsers);
+    } catch (e) {
+      print("Exception while fetching users: ${e.toString()}");
+    }
+
+    print("Final user list: ${users.map((e) => e?.toJson())}");
     return users;
   }
 }

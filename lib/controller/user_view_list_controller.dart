@@ -11,7 +11,6 @@ class UserTableController extends GetxController {
   Future<void> fetchUsersBySpecialPackage(String packageId, String type) async {
     isLoading.value = true;
     final url = '${Constants.BASE_URL}${Constants.FETCH_USER_BY_SPECIAL_ID}/$packageId?type=$type';
-
     try {
       final response = await http.get(Uri.parse(url));
       print("API URL: $url"); // Log the request URL

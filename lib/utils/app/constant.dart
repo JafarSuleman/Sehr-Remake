@@ -29,7 +29,7 @@ class Constants {
 
   static const GET_PACKAGES = '/api/v1/package';
   static const UPDATE_ORDER_STATUS = '/api/v1/order/update-status';
-  static const GET_BUSSINESS_BYPHONE = "/api/v1/business/shop-data";
+  static const GET_BUSSINESS_DATA = "/api/v1/business/shop-data";
 
   static const GET_USER_DATA_BYID = '/api/v1/user';
   static const GET_CATEGORIES = '/api/v1/category';

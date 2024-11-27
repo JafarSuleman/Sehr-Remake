@@ -1,26 +1,23 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:sehr_remake/controller/package_controller.dart';
 import 'package:sehr_remake/controller/user_controller.dart';
 import 'package:sehr_remake/model/business_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:sehr_remake/model/user_model.dart';
-import 'package:sehr_remake/utils/app/constant.dart';
 import 'package:sehr_remake/utils/auth_check/bussiness_data_check.dart';
 import '../../../../components/package_item_component.dart';
 import '../../../../controller/bussinesController.dart';
+import '../../../../utils/app/constant.dart';
 import '../../../../utils/color_manager.dart';
 
 class BussinessPackageScreen extends StatefulWidget {
+  String? identifier;
   final XFile imgFile;
   final BussinessModel bussinessModel;
 
   BussinessPackageScreen(
-      {super.key, required this.imgFile, required this.bussinessModel});
+      {super.key, required this.imgFile, required this.bussinessModel, required this.identifier});
 
   @override
   State<BussinessPackageScreen> createState() => _BussinessPackageScreenState();
@@ -60,7 +57,7 @@ class _BussinessPackageScreenState extends State<BussinessPackageScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Sehr Packages"),
+          title: const Text("Sehr Packages"),
           backgroundColor: ColorManager.gradient1,
         ),
         body: Stack(
@@ -77,11 +74,11 @@ class _BussinessPackageScreenState extends State<BussinessPackageScreen> {
                     });
                     String res = await BussinessController()
                         .createBussinessData(
-                            widget.bussinessModel, widget.imgFile);
+                            widget.bussinessModel, widget.imgFile,widget.identifier!);
                     print(packages[index].id);
                     var response = await http.put(
                         Uri.parse(
-                            "${Constants.BASE_URL}/api/v1/user/package/${user.mobile!}"),
+                            "${Constants.BASE_URL}/api/v1/user/package/${widget.identifier!}"),
                         body: {"package": packages[index].id});
                     print(response.body);
                     setState(() {
@@ -90,7 +87,7 @@ class _BussinessPackageScreenState extends State<BussinessPackageScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CheckForBussinesData(),
+                          builder: (context) => CheckForBusinessData(identifier: widget.identifier,),
                         ));
                   } catch (e) {
                     setState(() {
@@ -104,7 +101,7 @@ class _BussinessPackageScreenState extends State<BussinessPackageScreen> {
             if (isLoading)
               Align(
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(),
+                child: const CircularProgressIndicator(),
               )
           ],
         ));

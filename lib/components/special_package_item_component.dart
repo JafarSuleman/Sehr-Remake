@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import '../controller/special_package_controller.dart';
-import '../controller/user_view_list_controller.dart';
 import '../utils/color_manager.dart';
-import '../view/home/special_package_screen/view_list_screen.dart';
 
 class SpecialPackageItem extends StatelessWidget {
   final String packageId;
   final String title;
   final String description;
-  final String note; // Nullable note
+  final String note;
   final String description2;
   final VoidCallback viewListPressed;
   final VoidCallback activatePressed;
   final String type;
-  final String activateButtonText; // New parameter for custom button text
+  final String activateButtonText;
 
   SpecialPackageItem({
     Key? key,

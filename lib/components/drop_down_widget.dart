@@ -74,7 +74,7 @@ class DropDownWidget extends StatelessWidget {
                 child: DropdownButtonHideUnderline(
                   child: Padding(
                     padding: EdgeInsets.only(
-                      left: getProportionateScreenWidth(23),
+                      left: getProportionateScreenWidth(20),
                     ),
                     child: DropdownButton(
                       // isExpanded: true,

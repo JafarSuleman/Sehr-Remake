@@ -10,6 +10,7 @@ class OrderModel {
       {this.shopid, this.userid, this.amount, this.status, this.date, this.id});
 
   OrderModel.fromJson(Map<String, dynamic> json) {
+    print("Order Model Data ==> ${json.toString()}");
     shopid = json['shopid'];
     userid = json['userid'];
     amount = json['amount'];
