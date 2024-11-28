@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -24,8 +26,8 @@ class PackageScreen extends StatefulWidget {
 
 class _PackageScreenState extends State<PackageScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _blinkAnimationController;
-  bool showBlinking = true;
+  late AnimationController _bounceAnimationController;
+  late Animation<double> _bounceAnimation;
 
   @override
   void initState() {
@@ -33,16 +35,49 @@ class _PackageScreenState extends State<PackageScreen>
 
     print("Email from Packages screen ==> ${widget.email}");
 
-    // Initialize the animation controller for blinking effect
-    _blinkAnimationController = AnimationController(
+    _bounceAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    )..repeat(reverse: true);
+      duration: const Duration(milliseconds: 150),
+    );
+
+    _bounceAnimation = Tween<double>(
+      begin: 0,
+      end: 8.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _bounceAnimationController,
+        curve: Curves.decelerate,
+      ),
+    );
+
+    void performDoubleBounce() {
+      if (!mounted) return;
+      
+      _bounceAnimationController.forward().then((_) {
+        if (!mounted) return;
+        _bounceAnimationController.reverse().then((_) {
+          if (!mounted) return;
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (!mounted) return;
+            _bounceAnimationController.forward().then((_) {
+              if (!mounted) return;
+              _bounceAnimationController.reverse();
+            });
+          });
+        });
+      });
+    }
+
+    performDoubleBounce();
+
+    Timer.periodic(const Duration(seconds: 3), (timer) {
+      performDoubleBounce();
+    });
   }
 
   @override
   void dispose() {
-    _blinkAnimationController.dispose();
+    _bounceAnimationController.dispose();
     super.dispose();
   }
 
@@ -51,76 +86,156 @@ class _PackageScreenState extends State<PackageScreen>
     var packageController = context.watch<PackageController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sehr Packages"),
-        backgroundColor: ColorManager.gradient1,
-        centerTitle: true,
-      ),
-      body: Builder(
-        builder: (context) {
-          print('isLoading: ${packageController.isLoading}');
-          if (packageController.isLoading) {
-            return Center(
-              child: loadingSpinkit(ColorManager.home_button, 60),
-            );
-          } else if (packageController.packages.isEmpty) {
-            return const Center(
-              child: Text('No packages available.'),
-            );
-          } else {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20,),
-                  // Add the blinking button at the top
-                  GestureDetector(
-                    onTap:(){
-                      specialPackageInfoDialog(context,null,false,widget.email,widget.isFromLogout);
-                    },
-                    child: AnimatedBuilder(
-                      animation: _blinkAnimationController,
-                      builder: (context, child) {
-                        return Opacity(
-                          opacity: showBlinking ? _blinkAnimationController.value : 1.0,
-                          child: const Padding(
-                            padding: EdgeInsets.only(left: 10,right: 10),
-                            child: HomeButtonComponent(
-                              btnColor: Colors.redAccent,
-                              width: double.infinity,
-                              imagePath: AppIcons.specialIcon,
-                              iconColor: Colors.white,
-                              btnTextColor: Colors.white,
-                              name: "Special Package",
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  // List of packages
-                  ...packageController.packages.map(
-                        (e) => PackageItem(
-                      title: e.title,
-                      description: e.description,
-                      pressed: () {
-                        termsAndConditionsDialog(context,
-                            onContinuePressed: () {
-                              Get.back();
-                              Get.to(AddCustomerBioView(
-                                whatsApp: widget.whatsApp,
-                                packageName: e.id,
-                                email: widget.email,
-                              ));
-                            }
-                        );
-                      },
-                    ),
-                  ).toList(),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(80), // Set your AppBar height here
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(20), // Round only the bottom corners
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.green.shade900,
+                  Colors.green.shade500,
+                  Colors.green.shade900,
                 ],
               ),
-            );
-          }
-        },
+            ),
+            child: AppBar(
+              title: const Text(
+                "Sehr Packages",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              centerTitle: true,
+              elevation: 4,
+              backgroundColor: Colors.transparent,
+            ),
+          ),
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
+          ),
+        ),
+        child: Builder(
+          builder: (context) {
+            print('isLoading: ${packageController.isLoading}');
+            if (packageController.isLoading) {
+              return Center(
+                child: loadingSpinkit(ColorManager.home_button, 60),
+              );
+            } else if (packageController.packages.isEmpty) {
+              return const Center(
+                child: Text('No packages available.'),
+              );
+            } else {
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20,),
+                    // Add the blinking button at the top
+                    GestureDetector(
+                      onTap: () {
+                        specialPackageInfoDialog(context, null, false, widget.email, widget.isFromLogout);
+                      },
+                      child: AnimatedBuilder(
+                        animation: _bounceAnimation,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(0, -_bounceAnimation.value),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Container(
+                                width: double.infinity,
+                                height: 45,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.red.shade600,
+                                      Colors.red.shade800,
+                                      Colors.red.shade900,
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.red.withOpacity(0.3),
+                                      spreadRadius: 1,
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      AppIcons.specialIcon,
+                                      color: Colors.white,
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Text(
+                                      "Special Package",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    // List of packages
+                    ...packageController.packages.map(
+                          (e) => PackageItem(
+                        title: e.title,
+                        description: e.description,
+                        pressed: () {
+                          termsAndConditionsDialog(context,
+                              onContinuePressed: () {
+                                Get.back();
+                                Get.to(AddCustomerBioView(
+                                  whatsApp: widget.whatsApp,
+                                  packageName: e.id,
+                                  email: widget.email,
+                                ));
+                              }
+                          );
+                        },
+                      ),
+                    ).toList(),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
   }

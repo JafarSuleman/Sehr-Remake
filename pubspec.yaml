@@ -42,6 +42,7 @@ dependencies:
   flutter_spinkit: ^5.2.1
   sms_autofill: ^2.4.0
   device_preview:
+  pretty_animated_buttons: ^0.0.2
 
 dev_dependencies:
   flutter_lints: ^2.0.0

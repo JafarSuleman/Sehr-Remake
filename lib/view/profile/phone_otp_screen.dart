@@ -35,12 +35,40 @@ class phoneNumberVerificationCodeView extends StatefulWidget {
 }
 
 class _phoneNumberVerificationCodeViewState
-    extends State<phoneNumberVerificationCodeView> {
+    extends State<phoneNumberVerificationCodeView> with SingleTickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _pincodeController = TextEditingController();
   String? _verificationId;
   bool isLoading = false;
   String? whatsAppNumber;
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isWhatsApp == false) {
+      _verifyPhoneNumber();
+    }
+    
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   void _verifyPhoneNumber() async {
     String phone = widget.phone.startsWith('0')
@@ -81,8 +109,6 @@ class _phoneNumberVerificationCodeViewState
       whatsAppNumber = phone;
     });
 
-    print("WhatsApp Number ===> $phone");
-
     try {
       final response = await http.post(
         Uri.parse('${Constants.BASE_URL}${Constants.VERIFY_WHATSAPP_OTP}'),
@@ -96,11 +122,9 @@ class _phoneNumberVerificationCodeViewState
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
         if (responseBody['success'] == true) {
-          print("WhatsApp OTP verified successfully.");
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setBool('isWhatsAppAuthenticated', true);
           await prefs.setString('whatsApp', phone);
-          print("WhatsApp Number 2 ===> $phone");
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -110,7 +134,7 @@ class _phoneNumberVerificationCodeViewState
                 selectedLocationIdFromOtp: widget.selectedLocationId,
               ),
             ),
-                (route) => false,
+            (route) => false,
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -124,10 +148,6 @@ class _phoneNumberVerificationCodeViewState
       }
     } catch (e) {
       print('Error: $e');
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
@@ -141,7 +161,6 @@ class _phoneNumberVerificationCodeViewState
       final User user = authResult.user!;
 
       if (user.uid.isNotEmpty) {
-        print('User signed in: ${user.phoneNumber}');
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -150,10 +169,8 @@ class _phoneNumberVerificationCodeViewState
               selectedLocationIdFromOtp: widget.selectedLocationId,
             ),
           ),
-              (route) => false,
+          (route) => false,
         );
-      } else {
-        print('Error signing in');
       }
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -167,25 +184,27 @@ class _phoneNumberVerificationCodeViewState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(errorMessage)),
       );
-    } catch (e) {
-      print('Error: $e');
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.isWhatsApp == false) {
-      _verifyPhoneNumber();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: Stack(
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
+          ),
+        ),
+        child: Stack(
           children: [
             Image.asset(
               AppImages.pattern2,
@@ -194,81 +213,100 @@ class _phoneNumberVerificationCodeViewState
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                    onTap: (){
-                      Get.back();
-                    },
-                    child: const TopBackButtonWidget()),
-                buildVerticleSpace(20),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: getProportionateScreenWidth(27),
-                  ),
-                  child: kTextBentonSansMed(
-                    'Enter 6-digit\nVerification code',
-                    fontSize: getProportionateScreenHeight(25),
-                  ),
-                ),
-                buildVerticleSpace(20),
-                Padding(
-                  padding: EdgeInsets.only(
-                      left: getProportionateScreenWidth(27)),
-                  child: kTextBentonSansMed(
-                    'Code sent to ${widget.phone}',
-                    fontSize: getProportionateScreenHeight(12),
-                  ),
-                ),
-                buildVerticleSpace(38),
+                const TopBackButtonWidget(),
+                buildVerticleSpace(50),
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: getProportionateScreenWidth(23),
+                    horizontal: getProportionateScreenWidth(27),
                   ),
-                  child: Container(
-                    height: getProportionateScreenHeight(100),
-                    width: SizeConfig.screenWidth,
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: getProportionateScreenWidth(30),
-                    ),
-                    decoration: BoxDecoration(
-                      color: ColorManager.white,
-                      borderRadius: BorderRadius.circular(
-                        getProportionateScreenHeight(22),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: ColorManager.black.withOpacity(0.05),
-                          blurRadius: getProportionateScreenHeight(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.isWhatsApp == true
+                            ? 'Verify Your WhatsApp'
+                            : 'Verify Your Phone',
+                        style: TextStyle(
+                          fontSize: getProportionateScreenHeight(28),
+                          fontWeight: FontWeight.bold,
+                          color: ColorManager.black,
                         ),
-                      ],
-                    ),
-                    child: PinCodeFields(
-                      length: 6,
-                      controller: _pincodeController,
-                      autoHideKeyboard: false,
-                      keyboardType: TextInputType.number,
-                      borderColor: ColorManager.black,
-                      activeBorderColor: ColorManager.primary,
-                      textStyle: TextStyleManager.regularTextStyle(
-                        fontSize: getProportionateScreenHeight(40),
                       ),
-                      onComplete: (result) {},
+                      buildVerticleSpace(8),
+                      Text(
+                        'Please enter the 6-digit code sent to',
+                        style: TextStyle(
+                          fontSize: getProportionateScreenHeight(16),
+                          color: ColorManager.black.withOpacity(0.6),
+                        ),
+                      ),
+                      Text(
+                        widget.phone,
+                        style: TextStyle(
+                          fontSize: getProportionateScreenHeight(16),
+                          fontWeight: FontWeight.w600,
+                          color: ColorManager.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                buildVerticleSpace(100),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(27),
+                  ),
+                  child: PinCodeFields(
+                    length: 6,
+                    controller: _pincodeController,
+                    autoHideKeyboard: false,
+                    keyboardType: TextInputType.number,
+                    fieldWidth: getProportionateScreenWidth(45),
+                    fieldHeight: getProportionateScreenHeight(65),
+                    borderWidth: 1.5,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: getProportionateScreenWidth(4),
                     ),
+                    borderColor: ColorManager.black.withOpacity(0.2),
+                    activeBorderColor: ColorManager.primary,
+                    fieldBackgroundColor: ColorManager.white,
+                    activeBackgroundColor: ColorManager.primary.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(8),
+                    textStyle: TextStyle(
+                      fontSize: getProportionateScreenHeight(20),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    animation: Animations.fade,
+                    animationDuration: const Duration(milliseconds: 300),
+                    animationCurve: Curves.easeInOut,
+                    switchInAnimationCurve: Curves.easeIn,
+                    switchOutAnimationCurve: Curves.easeOut,
+                    fieldBorderStyle: FieldBorderStyle.square,
+                    onChange: (value) {
+                      if (value.length == 1) {
+                        _animationController.forward().then((_) {
+                          _animationController.reverse();
+                        });
+                      }
+                    },
+                    onComplete: (result) {
+                      _animationController.forward().then((_) {
+                        _animationController.reverse();
+                      });
+                    },
                   ),
                 ),
                 const Spacer(),
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: getProportionateScreenWidth(118),
+                    horizontal: getProportionateScreenWidth(27),
                   ),
                   child: AppButtonWidget(
-                    ontap: isLoading
-                        ? null
-                        : () async {
+                    ontap: isLoading ? null : () async {
                       if (_pincodeController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text("Enter 6-digit code")));
+                          const SnackBar(content: Text("Enter 6-digit code")),
+                        );
                         return;
                       }
                       setState(() {
@@ -285,13 +323,22 @@ class _phoneNumberVerificationCodeViewState
                         isLoading = false;
                       });
                     },
+                    height: getProportionateScreenHeight(55),
+                    width: double.infinity,
+                    borderRadius: getProportionateScreenHeight(15),
                     child: isLoading
-                        ? loadingSpinkit(ColorManager.home_button)
-                        : Text('Verify',
-                        style: TextStyle(color: ColorManager.white)),
+                        ? loadingSpinkit(ColorManager.white)
+                        : Text(
+                            'Verify',
+                            style: TextStyle(
+                              color: ColorManager.white,
+                              fontSize: getProportionateScreenHeight(16),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
-                buildVerticleSpace(50),
+                buildVerticleSpace(30),
               ],
             ),
           ],

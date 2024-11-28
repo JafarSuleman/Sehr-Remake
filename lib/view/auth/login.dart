@@ -17,6 +17,7 @@ import '../../utils/size_config.dart';
 import '../../controller/user_controller.dart';
 import '../profile/email_otp_screen.dart';
 import '../profile/phone_otp_screen.dart';
+import 'dart:async';
 
 class LoginView extends StatefulWidget {
   bool? isFromSpecialPackage = false;
@@ -121,10 +122,44 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
       });
     }
 
-    _blinkAnimationController = AnimationController(
+    _bounceAnimationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
-    )..repeat(reverse: true);
+      duration: const Duration(milliseconds: 150),
+    );
+
+    _bounceAnimation = Tween<double>(
+      begin: 0,
+      end: 8.0,
+    ).animate(
+      CurvedAnimation(
+        parent: _bounceAnimationController,
+        curve: Curves.decelerate,
+      ),
+    );
+
+    void performDoubleBounce() {
+      if (!mounted) return;
+      
+      _bounceAnimationController.forward().then((_) {
+        if (!mounted) return;
+        _bounceAnimationController.reverse().then((_) {
+          if (!mounted) return;
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (!mounted) return;
+            _bounceAnimationController.forward().then((_) {
+              if (!mounted) return;
+              _bounceAnimationController.reverse();
+            });
+          });
+        });
+      });
+    }
+
+    performDoubleBounce();
+
+    Timer.periodic(const Duration(seconds: 3), (timer) {
+      performDoubleBounce();
+    });
 
     _phoneNumberController.addListener(() {
       if (_phoneNumberController.text.isNotEmpty) {
@@ -175,7 +210,8 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
     });
 
   }
-  late AnimationController _blinkAnimationController;
+  late AnimationController _bounceAnimationController;
+  late Animation<double> _bounceAnimation;
   bool showBlinking = true;
   bool? isWhatsApp = false;
   final AuthController authController = Get.put(AuthController());
@@ -191,288 +227,530 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
     _phoneFocusNode.dispose();
     _emailFocusNode.dispose();
     _whatsAppFocusNode.dispose();
-    _blinkAnimationController.dispose();
+    _bounceAnimationController.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Login Screen Special Package ==> ${widget.isFromSpecialPackage}");
-    print("Login Screen Special Package Id ==> ${widget.specialPackageName}");
-    // final viewModel = Provider.of<AuthViewModel>(context);
     return Scaffold(
-      // resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: getProportionateScreenWidth(34),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                buildVerticleSpace(80),
-                const LogoWidget(),
-                buildVerticleSpace(32),
-                kTextBentonSansBold(
-                  'Login To Your Account',
-                  fontSize: getProportionateScreenHeight(20),
-                ),
-                buildVerticleSpace(20),
-                widget.isFromSpecialPackage == true || widget.isFromLogout == true? const SizedBox.shrink():GestureDetector(
-                  onTap: () {
-                    specialPackageInfoDialog(context,widget.specialPackageName,true,_emailController.text.trim());
-                  },
-                  child: AnimatedBuilder(
-                    animation: _blinkAnimationController,
-                    builder: (context, child) {
-                      return Opacity(
-                        opacity: showBlinking ? _blinkAnimationController.value : 1.0,
-                        child: const HomeButtonComponent(
-                          btnColor: Colors.redAccent,
-                          width: double.infinity,
-                          imagePath: AppIcons.specialIcon,
-                          iconColor: Colors.white,
-                          btnTextColor: Colors.white,
-                          name: "Special Package",
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                buildVerticleSpace(30),
-                Form(
-                  key: _phoneFormKey,
-                  child: TextFieldWidget(
-                    controller: _phoneNumberController,
-                    keyboardType: TextInputType.phone,
-                    hintText: 'Enter Phone Or WhatsApp Number',
-                    enabled: isPhoneFieldEnabled,
-                    prefixIcon: Icon(
-                      Icons.call,
-                      size: getProportionateScreenHeight(18),
-                      color: ColorManager.primaryLight,
-                    ),
-                    sufixIcon: Image.asset(
-                            AppIcons.whatsappIcon,
-                            color: ColorManager.primaryLight,
-                            scale: 30,
-                          ),
-                    validator: _phoneNumberController.text.isNotEmpty
-                        ? (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Phone is required';
-                      }
-                      if (!GetUtils.isPhoneNumber(value)) {
-                        return 'Please enter a valid phone or whatsApp number';
-                      }
-                      return null;
-                    }
-                        : null,
-                    focusNode: _phoneFocusNode,
-                    onFieldSubmit: (value) {},
-                  ),
-                ),
-                buildVerticleSpace(8),
-                const Text(
-                  'or',
-                  style: TextStyle(fontSize: 16),
-                ),
-                buildVerticleSpace(8),
-                Form(
-                  key: _emailFormKey,
-                  child: TextFieldWidget(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    hintText: 'Enter Email',
-                    enabled: isEmailFieldEnabled,
-                    prefixIcon: Icon(
-                      Icons.email,
-                      size: getProportionateScreenHeight(18),
-                      color: ColorManager.primaryLight,
-                    ),
-                    validator: _emailController.text.isNotEmpty
-                        ? (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email is required';
-                      }
-                      if (!GetUtils.isEmail(value)) {
-                        return 'Please enter a valid email address';
-                      }
-                      return null;
-                    }
-                        : null,
-                    focusNode: _emailFocusNode,
-                    onFieldSubmit: (value) {},
-                  ),
-                ),
-                buildVerticleSpace(20),
-
-                isEmailFieldEnabled ? Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: getProportionateScreenWidth(90),
-                  ),
-                  child: AppButtonWidget(
-                    child:  isLoading
-                        ? loadingSpinkit(Colors.white):const Text("Send Otp",style: TextStyle(color: Colors.white),),
-                    ontap: () async {
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      if (_emailController.text.isNotEmpty) {
-                        if (_emailFormKey.currentState!.validate()) {
-                          String email = _emailController.text.trim();
-
-                          print("Email from Login Screen ===> $email");
-
-                          bool otpSent = await UserController().sendEmailOTP(email);
-                          if (otpSent) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    EmailVerificationCodeView(email: email,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,),
-                              ),
-                            );
-                            setState(() {
-                              isLoading = false;
-                            });
-                          } else {
-                            setState(() {
-                              isLoading = false;
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text("Failed to send OTP to email")),
-                            );
-                          }
-                        } else {
-                          setState(() {
-                            isLoading = false;
-                          });
-                        }
-                      }
-                    },
-                  ),
-                ) :
-                Column(children: [
-                  AppButtonWidget(
-                    width: 200,
-                    child:  isLoading
-                        ? loadingSpinkit(Colors.white):const Text("Send OTP Via Sms",style: TextStyle(color: Colors.white),),
-                    ontap: () async {
-                      setState(() {
-                        isLoading = true;
-                      });
-
-                      if (_phoneNumberController.text.isNotEmpty) {
-                        if (_phoneFormKey.currentState!.validate()) {
-                          String phoneNumber = _phoneNumberController.text.trim();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  phoneNumberVerificationCodeView(phone: phoneNumber,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,isWhatsApp: false,),
-                            ),
-                          );
-                          setState(() {
-                            isLoading = false;
-                          });
-                        } else {
-                          setState(() {
-                            isLoading = false;
-                          });
-                        }
-                      }
-                    },
-                  ),
-                  buildVerticleSpace(15),
-                  // Obx(() => AppButtonWidget(
-                  //   width: 200,
-                  //   child: authController.isLoading.value
-                  //       ? loadingSpinkit(Colors.white)
-                  //       : const Text("Send OTP Via WhatsApp", style: TextStyle(color: Colors.white)),
-                  //   ontap: () {
-                  //     if (_phoneNumberController.text.isNotEmpty) {
-                  //       authController.sendWhatsAppOTP(
-                  //         context,
-                  //         _phoneNumberController.text.trim(),
-                  //         widget.specialPackageName,
-                  //         widget.selectedLocationId,
-                  //       );
-                  //     } else {
-                  //       ScaffoldMessenger.of(context).showSnackBar(
-                  //         const SnackBar(content: Text("Please enter a phone number")),
-                  //       );
-                  //     }
-                  //   },
-                  // )),
-                  AppButtonWidget(
-                    width: 200,
-                    child:  isLoading2
-                        ? loadingSpinkit(Colors.white):const Center(child: Text("Send OTP Via WhatsApp",style: TextStyle(color: Colors.white,),textAlign: TextAlign.center,)),
-                    ontap: () async {
-
-
-                      setState(() {
-                        isLoading2 = true;
-                      });
-
-                      if (_phoneNumberController.text.isNotEmpty) {
-                        if (_phoneFormKey.currentState!.validate()) {
-                          await _sendWhatsAppOTP();
-                          setState(() {
-                            isLoading2 = false;
-                          });
-                        }
-                      } else {
-                        setState(() {
-                          isLoading2 = false;
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Please enter a phone number")),
-                        );
-                      }
-                    },
-                  ),
-
-                ],),
-                buildVerticleSpace(30),
-                const SizedBox(
-                  height: 20,
-                ),
-                GestureDetector(
-                  onTap: () => showInfoDialog(context),
-                  child: Container(
-                    width: 150,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: const Color.fromARGB(255, 209, 206, 206))),
-                    padding: const EdgeInsets.all(5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.info), // Info icon
-                        const SizedBox(width: 8),
-                        Text(
-                          'سحر کیا ہے؟',
-                          style: TextStyleManager.boldTextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
           ),
         ),
+        child: Stack(
+          children: [
+            Image.asset(
+              AppImages.pattern2,
+              color: ColorManager.primary.withOpacity(0.1),
+            ),
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: getProportionateScreenWidth(34),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      buildVerticleSpace(80),
+                      const LogoWidget(),
+                      buildVerticleSpace(32),
+                      kTextBentonSansBold(
+                        'Login To Your Account',
+                        fontSize: getProportionateScreenHeight(20),
+                      ),
+                      buildVerticleSpace(20),
+                      widget.isFromSpecialPackage == true || widget.isFromLogout == true
+                        ? const SizedBox.shrink()
+                        : GestureDetector(
+                            onTap: () {
+                              specialPackageInfoDialog(
+                                context,
+                                widget.specialPackageName,
+                                true,
+                                _emailController.text.trim()
+                              );
+                            },
+                            child: AnimatedBuilder(
+                              animation: _bounceAnimation,
+                              builder: (context, child) {
+                                return Transform.translate(
+                                  offset: Offset(0, -_bounceAnimation.value),
+                                  child: Container(
+                                    width: double.infinity,
+                                    height: 45,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.red.shade600,
+                                          Colors.red.shade800,
+                                          Colors.red.shade900,
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.red.withOpacity(0.3),
+                                          spreadRadius: 1,
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          AppIcons.specialIcon,
+                                          color: Colors.white,
+                                          height: 24,
+                                          width: 24,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Text(
+                                          "Special Package",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+
+                      buildVerticleSpace(30),
+                      Form(
+                        key: _phoneFormKey,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: TextFormField(
+                            controller: _phoneNumberController,
+                            keyboardType: TextInputType.phone,
+                            enabled: isPhoneFieldEnabled,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Enter Phone Or WhatsApp Number',
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 15,
+                              ),
+                              prefixIcon: Container(
+                                padding: const EdgeInsets.all(12),
+                                child: Icon(
+                                  Icons.call,
+                                  size: 20,
+                                  color: ColorManager.primaryLight,
+                                ),
+                              ),
+                              suffixIcon: Container(
+                                padding: const EdgeInsets.all(12),
+                                child: Image.asset(
+                                  AppIcons.whatsappIcon,
+                                  color: ColorManager.primaryLight,
+                                  scale: 30,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 16,
+                              ),
+                            ),
+                            validator: _phoneNumberController.text.isNotEmpty
+                                ? (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Phone is required';
+                                    }
+                                    if (!GetUtils.isPhoneNumber(value)) {
+                                      return 'Please enter a valid phone or whatsApp number';
+                                    }
+                                    return null;
+                                  }
+                                : null,
+                            focusNode: _phoneFocusNode,
+                          ),
+                        ),
+                      ),
+                      buildVerticleSpace(12),
+                      Form(
+                        key: _emailFormKey,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: TextFormField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            enabled: isEmailFieldEnabled,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Enter Email',
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 15,
+                              ),
+                              prefixIcon: Container(
+                                padding: const EdgeInsets.all(12),
+                                child: Icon(
+                                  Icons.email,
+                                  size: 20,
+                                  color: ColorManager.primaryLight,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 16,
+                              ),
+                              enabled: isEmailFieldEnabled,
+                            ),
+                            validator: _emailController.text.isNotEmpty
+                                ? (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Email is required';
+                                    }
+                                    if (!GetUtils.isEmail(value)) {
+                                      return 'Please enter a valid email address';
+                                    }
+                                    return null;
+                                  }
+                                : null,
+                            focusNode: _emailFocusNode,
+                          ),
+                        ),
+                      ),
+                      buildVerticleSpace(40),
+
+                      isEmailFieldEnabled ? 
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.green.shade400,
+                              Colors.green.shade600,
+                              Colors.green.shade800,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.25),
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        width: double.infinity,  // Same width as text fields
+                        child: AppButtonWidget(
+                          height: 45,  // Slightly less than text fields
+                          child: isLoading
+                            ? loadingSpinkit(Colors.white)
+                            : const Text(
+                                "Send OTP",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+
+                          ontap: () async {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            if (_emailController.text.isNotEmpty) {
+                              if (_emailFormKey.currentState!.validate()) {
+                                String email = _emailController.text.trim();
+
+                                print("Email from Login Screen ===> $email");
+
+                                bool otpSent = await UserController().sendEmailOTP(email);
+                                if (otpSent) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EmailVerificationCodeView(email: email,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,),
+                                    ),
+                                  );
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                } else {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("Failed to send OTP to email")),
+                                  );
+                                }
+                              } else {
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              }
+                            }
+                          },
+                        ),
+                      ) :
+                      Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.green.shade400,
+                                  Colors.green.shade600,
+                                  Colors.green.shade800,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.green.withOpacity(0.25),
+                                  spreadRadius: 1,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            width: double.infinity,
+                            child: AppButtonWidget(
+                              height: 45,
+                              child: isLoading
+                                ? loadingSpinkit(Colors.white)
+                                : const Text(
+                                    "Send OTP Via SMS",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+
+                              ontap: () async {
+                                setState(() {
+                                  isLoading = true;
+                                });
+
+                                if (_phoneNumberController.text.isNotEmpty) {
+                                  if (_phoneFormKey.currentState!.validate()) {
+                                    String phoneNumber = _phoneNumberController.text.trim();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            phoneNumberVerificationCodeView(phone: phoneNumber,specialPackageName: widget.specialPackageName,selectedLocationId: widget.selectedLocationId,isWhatsApp: false,),
+                                      ),
+                                    );
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                          buildVerticleSpace(15),
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.green.shade400,
+                                  Colors.green.shade600,
+                                  Colors.green.shade800,
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.green.withOpacity(0.25),
+                                  spreadRadius: 1,
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            width: double.infinity,
+                            child: AppButtonWidget(
+                              height: 45,
+                              child: isLoading2
+                                ? loadingSpinkit(Colors.white)
+                                : const Text(
+                                    "Send OTP Via WhatsApp",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                              ontap: () async {
+                                setState(() {
+                                  isLoading2 = true;
+                                });
+
+                                if (_phoneNumberController.text.isNotEmpty) {
+                                  if (_phoneFormKey.currentState!.validate()) {
+                                    await _sendWhatsAppOTP();
+                                    setState(() {
+                                      isLoading2 = false;
+                                    });
+                                  }
+                                } else {
+                                  setState(() {
+                                    isLoading2 = false;
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Please enter a phone number")),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      buildVerticleSpace(30),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              const Color(0xff134250),
+                              const Color(0xff12293c),
+                              Colors.blue.shade800,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xff134250).withOpacity(0.2),
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => showInfoDialog(context),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 20,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'سحر کیا ہے؟',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'UrduFont',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 100,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-      // ),
     );
   }
 }
@@ -609,7 +887,7 @@ void showInfoDialog(BuildContext context) {
               ),
               SizedBox(height: 5,),
               Text(
-                'ہر شعبہ کے لیے آفرز نہ صرف حیران کن ہے بلکہ ناقابل عمل نظر آتی ہے، یہی اس پروجیکٹ کے منفرد یا innovative ہونے کا ثبوت بھی ہے۔',
+                'ہر شعبہ کے لیے آفرز نہ صرف حیران کن ہے بلکہ ناقابل عمل ظر آتی ہے یہی اس پروجیکٹ کے منفرد یا innovative ہونے کا ثبوت بھی ہے۔',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontFamily: 'UrduFont',
