@@ -52,10 +52,10 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
           print("Fetched Users: ${fetchedUsers?.map((e) => e?.toJson())}");
           setState(() {
             users = fetchedUsers;
-            isInitialLoading = false; // Stop initial loading
+            isInitialLoading = false;
           });
 
-          // Set up Timer for periodic fetching
+
           _orderTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
             if (!mounted) {
               timer.cancel();
@@ -66,7 +66,7 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
               context.read<UserController>().getSelectedUser(context.read<OrderController>().shopOrders).then((fetchedUsers) {
                 setState(() {
                   users = fetchedUsers;
-                  // No need to set isInitialLoading here since it's only for the first fetch
+
                 });
               }).catchError((error) {
                 print("Error fetching periodic user data: $error");
@@ -79,26 +79,26 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
           print("Error fetching user data: $error");
           setState(() {
             users = [];
-            isInitialLoading = false; // Stop initial loading even on error
+            isInitialLoading = false;
           });
         });
       }).catchError((error) {
         print("Error fetching orders: $error");
         setState(() {
-          isInitialLoading = false; // Stop initial loading even on error
+          isInitialLoading = false;
         });
       });
     }).catchError((error) {
       print("Error fetching business data: $error");
       setState(() {
-        isInitialLoading = false; // Stop initial loading even on error
+        isInitialLoading = false;
       });
     });
   }
 
   @override
   void dispose() {
-    _orderTimer?.cancel(); // Cancel the Timer when the widget is disposed
+    _orderTimer?.cancel();
     super.dispose();
   }
 
@@ -108,11 +108,11 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
     var businessData = context.watch<BussinessController>().singleShopData;
     List<OrderModel> orders = context.watch<OrderController>().shopOrders;
 
-    phone = (businessData.mobile != "null" || businessData.mobile!.isNotEmpty || businessData.mobile != null)
+    phone = businessData?.mobile != null && businessData.mobile != "null" && businessData.mobile!.isNotEmpty
         ? businessData.mobile.toString()
         : "";
 
-    email = (businessData.email != "null" && businessData.email!.isNotEmpty || businessData.mobile != null)
+    email = businessData?.email != null && businessData.email != "null" && businessData.email!.isNotEmpty
         ? businessData.email.toString()
         : "";
 
@@ -123,9 +123,9 @@ class _BusinessHomeScreenState extends State<BusinessHomeScreen> {
 
     return Scaffold(
       drawer: BussinessDrawer(
-        name: businessData.businessName.toString(),
-        emailOrPhone: email == "null" ? phone :phone == "null" ? email:"",
-        imgUrl: businessData.logo.toString(),
+        name: businessData?.businessName?.toString() ?? "",
+        emailOrPhone: email.isNotEmpty ? email : phone,
+        imgUrl: businessData?.logo?.toString() ?? "",
       ),
       appBar: AppBar(
         backgroundColor: ColorManager.gradient2,

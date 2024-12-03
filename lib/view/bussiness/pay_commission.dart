@@ -83,7 +83,7 @@ class _PayScreenState extends State<PayScreen> {
                   height: 100,
                   width: 100,
                   child: Image.network(
-                    "https://crushlogo.com/public/uploads/thumbnail/easypaisa-pay-logo-11685340011w1ndm8dzgj.png",
+                    "https://crystalpng.com/wp-content/uploads/2024/10/Easypaisa-logo.png",
                     fit: BoxFit.fitHeight,
                   ),
                 ),
@@ -103,7 +103,7 @@ class _PayScreenState extends State<PayScreen> {
                       Column(
                         children: [
                           Text(
-                            "Easy Paisa",
+                            "Easy Paisa / Jazz Cash",
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w700),
                           ),
@@ -111,37 +111,14 @@ class _PayScreenState extends State<PayScreen> {
                             height: 5,
                           ),
                           Text(
-                            "03006786890",
+                            "03005032424",
                             style: TextStyle(fontSize: 16),
                           ),
                           SizedBox(
                             height: 5,
                           ),
                           Text(
-                            "Muhamad Amir",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            "Jazz Cash",
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w700),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            "03006786890",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            "Muhamad Amir",
+                            "Nasira Malik / Munawar Ahmad",
                             style: TextStyle(fontSize: 16),
                           ),
                         ],
@@ -149,7 +126,7 @@ class _PayScreenState extends State<PayScreen> {
                     ],
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 40,
                   ),
                   Column(
                     children: [
@@ -162,18 +139,18 @@ class _PayScreenState extends State<PayScreen> {
                         height: 5,
                       ),
                       Text(
-                        "Faisal Bank",
+                        "Allied Bank",
                         style: TextStyle(fontSize: 16),
                       ),
                       Text(
-                        "0300678689022122",
+                        "10030010001982830020",
                         style: TextStyle(fontSize: 16),
                       ),
                       const SizedBox(
                         height: 5,
                       ),
                       Text(
-                        "Muhamad Amir",
+                        "Munawar Ahmad Malik",
                         style: TextStyle(fontSize: 16),
                       ),
                     ],
