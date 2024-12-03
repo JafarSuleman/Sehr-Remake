@@ -87,10 +87,10 @@ class _PackageScreenState extends State<PackageScreen>
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80), // Set your AppBar height here
+        preferredSize: const Size.fromHeight(70),
         child: ClipRRect(
           borderRadius: const BorderRadius.vertical(
-            bottom: Radius.circular(20), // Round only the bottom corners
+            bottom: Radius.circular(20),
           ),
           child: Container(
             decoration: BoxDecoration(

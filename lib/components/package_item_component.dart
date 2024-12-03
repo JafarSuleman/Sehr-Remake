@@ -35,7 +35,7 @@ class PackageItem extends StatelessWidget {
         ],
       ),
       child: Material(  // Changed from Card to Material for better shadow handling
-        color: Colors.transparent,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
@@ -77,27 +77,58 @@ class PackageItem extends StatelessWidget {
                 const SizedBox(height: 16.0),
                 Center(
                   child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                            (states) => ColorManager.home_button,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                      elevation: 0,
+                    ).copyWith(
+                      backgroundColor: MaterialStateProperty.all(
+                        Colors.white,
                       ),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                      overlayColor: MaterialStateProperty.all(
+                        Colors.white,
                       ),
                     ),
                     onPressed: pressed,
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.black, size: 15),
-                        SizedBox(width: 5),
-                        Text('Activate Package',style: TextStyle(color: Colors.black),),
-                      ],
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.green.shade900,
+                            Colors.green.shade500,
+                            Colors.green.shade900,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green.withOpacity(0.25),
+                            spreadRadius: 1,
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.check_circle, color: Colors.white, size: 15),
+                          SizedBox(width: 5),
+                          Text(
+                            'Activate Package',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

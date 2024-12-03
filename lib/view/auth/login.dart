@@ -311,28 +311,28 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                                           offset: const Offset(0, 4),
                                         ),
                                       ],
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Image.asset(
-                                          AppIcons.specialIcon,
+                                    ),child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        AppIcons.specialIcon,
+                                        color: Colors.white,
+                                        height: 24,
+                                        width: 24,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      const Text(
+                                        "Special Package",
+                                        style: TextStyle(
                                           color: Colors.white,
-                                          height: 24,
-                                          width: 24,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 0.5,
                                         ),
-                                        const SizedBox(width: 12),
-                                        const Text(
-                                          "Special Package",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
+                                  ),
+
                                   ),
                                 );
                               },
@@ -482,12 +482,10 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
                             colors: [
-                              Colors.green.shade400,
-                              Colors.green.shade600,
-                              Colors.green.shade800,
+                              Colors.green.shade900,
+                              Colors.green.shade500,
+                              Colors.green.shade900,
                             ],
                           ),
                           borderRadius: BorderRadius.circular(15),
@@ -500,9 +498,9 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                             ),
                           ],
                         ),
-                        width: double.infinity,  // Same width as text fields
+                        width: double.infinity,
                         child: AppButtonWidget(
-                          height: 45,  // Slightly less than text fields
+                          height: 45,
                           child: isLoading
                             ? loadingSpinkit(Colors.white)
                             : const Text(
@@ -513,7 +511,6 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-
                           ontap: () async {
                             setState(() {
                               isLoading = true;
@@ -560,12 +557,10 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
                                 colors: [
-                                  Colors.green.shade400,
-                                  Colors.green.shade600,
-                                  Colors.green.shade800,
+                                  Colors.green.shade900,
+                                  Colors.green.shade500,
+                                  Colors.green.shade900,
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(15),
@@ -591,7 +586,6 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-
                               ontap: () async {
                                 setState(() {
                                   isLoading = true;
@@ -623,12 +617,10 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
                           Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
                                 colors: [
-                                  Colors.green.shade400,
-                                  Colors.green.shade600,
-                                  Colors.green.shade800,
+                                  Colors.green.shade900,
+                                  Colors.green.shade500,
+                                  Colors.green.shade900,
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(15),
@@ -759,217 +751,339 @@ class _LoginViewState extends State<LoginView> with SingleTickerProviderStateMix
 void showInfoDialog(BuildContext context) {
   showDialog(
     context: context,
+    barrierColor: Colors.black54,  // Darker overlay
     builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Center(
-          child: Text(
-            'سحر کیا ہے؟',
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontFamily: 'UrduFont',
-              fontSize: 34,
+      final width = MediaQuery.of(context).size.width;
+      return Center(
+        child: Container(
+          width: width * 0.90,
+          child: Dialog(
+            backgroundColor: Colors.white,
+            insetPadding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-          ),
-        ),
-        content: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.end,
-            children: [
-              Text(
-                'سحر (SEHR) ایک سادہ معاشی انقلاب کا فارمولا ہے.',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
+            elevation: 5,
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: width * 0.90,
+                maxHeight: 680
               ),
-              SizedBox(height: 5,),
-              Text(
-                'SEHR = Sober Economic and Housing Revolution',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'اس میں عام عوام اور خواص کو مکانوں کی قلت کا جو سامنا ہے اس کو کسی حد تک پورا کرنے کی کوشش کی جائے گی۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'اس میں شامل ہونے والے تمام ممبران کو ایک مکان بالکل فری دیا جائے گا۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'کسی بھی شخص سے مکان کے حوالے سے نہ کوئی فیس لی جائے گی۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text('نہ عطیہ نہ تحفہ اور نہ ہی انویسٹمنٹ لی جائے گی۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'یہ ایک انتہائی سادہ فارمولا ہے کہ صرف اپنی ماہوار خریداری کو ایک لائن پر لاتے ہوئے سحر کوڈ والی شاپس سے کریں تو آپ کی اپنی ضروریات کو پورا کرنے کے لئے خرچ کی گئی رقم آپ کے مکان کی قسط تصور ہوگی۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'کل 240 قسطیں ہوں گی، ایک قسط 10 ہزار روہے کی ہوگی۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'یہ وہ رقم ہوگی جو آپ اپنی روز مرہ کی خریداری سے خرچ کرتے ہیں۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'آپ نے سحر پروجیکٹ کو ایک روپیہ بھی ادا نہیں کرنا ۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'کسی بھی شعبہ سے تعلق رکھنے والے افراد اس میں شامل ہو کر حیران کن فوائد حاصل کر سکتے ہیں ۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'ہر شعبہ کے لیے آفرز نہ صرف حیران کن ہے بلکہ ناقابل عمل ظر آتی ہے یہی اس پروجیکٹ کے منفرد یا innovative ہونے کا ثبوت بھی ہے۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'اس پروجیکٹ کو ڈیزائن کرنے والے پروفیسر منور احمد ملک ہیں جو پہلے ہی 50 سے زائد ایجادات کے موجد ہیں۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'پاکستان انجینئرنگ کونسل اسلام آباد کے تھنک ٹینک کے ممبر رہ چکے ہیں۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'نیشنل لیول پر بہت سے پروجیکٹ ڈیزائن کر چکے ہیں پچھلے 20 سال سے اس پروجیکٹ کو ترتیب دے رہے تھے ، اسے اکنامکس کے ماہرین قابل عمل قرار دے چکے ہیں ۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'یہ مکان ہر تحصیل میں پہلے سے موجود سوسائٹیز یا کالونیز میں پلاٹ لے کر بنائے جائیں گے اور پبلک کو فری دیئے جائیں گے۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-              SizedBox(height: 5,),
-              Text(
-                'یہ منصوبہ اپنے اندر ایک معاشی انقلاب بھی رکھتا ہے جب اتنی بڑی معاشی سرگرمی ایک لائن پر آجائے گی تو قیمتیں بھی کنٹرول میں آجائیں گی مہنگائی ختم ہو کر منفی ہو جائے گی ان شآءاللہ، ڈالر کا ریٹ بھی کنٹرول ہو جائے گا اور بیرونی قرضوں سے بھی نجات ملے گی ان شاءاللہ ۔',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'UrduFont',
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.right,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          Center(
-            child: ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith(
-                        (states) => Colors.redAccent
-                ),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.green.shade900,
+                          Colors.green.shade500,
+                          Colors.green.shade900,
+                        ],
+                      ),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10),
+                        child: Text(
+                          'سحر کیا ہے؟',
+                          textAlign: TextAlign.right,
+                          textDirection: TextDirection.rtl,
+                          style: TextStyle(
+                            fontSize: 35,
+                            fontFamily: 'UrduFont',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'بند کریں', // 'Close' in Urdu
-                textDirection: TextDirection.rtl,
-                style: TextStyle(fontSize: 24, fontFamily: 'UrduFont', color: Colors.white),
+                  
+                  // Content
+                  Flexible(
+                    child: Container(
+                      width: width * 0.85,
+                      margin: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: const SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'سحر (SEHR) ایک سادہ معاشی انقلاب کا فارمولا ہے.',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'SEHR = Sober Economic and Housing Revolution',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'اس میں عام عوام اور خواص کو مکانوں کی قلت کا جو سامنا ہے اس کو کسی حد تک پورا کرنے کی کوشش کی جائے گی۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'اس میں شامل ہونے والے تمام ممبران کو ایک مکان بالکل فری دیا جائے گا۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'کسی بھی شخص سے مکان کے حوالے سے نہ کوئی فیس لی جائے گی۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text('نہ عطیہ نہ تحفہ اور نہ ہی انویسٹمنٹ لی جائے گی۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'یہ ایک انتہائی سادہ فارمولا ہے کہ صرف اپنی ماہوار خریداری کو ایک لائن پر لاتے ہوئے سحر کوڈ والی شاپس سے کریں تو آپ کی اپنی ضروریات کو پورا کرنے کے لئے خرچ کی گئی رقم آپ کے مکان کی قسط تصور ہوگی۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'کل 240 قسطیں ہوں گی، ایک قسط 10 ہزار روہے کی ہوگی۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'یہ وہ رقم ہوگی جو آپ اپنی روز مرہ کی خریداری سے خرچ کرتے ہیں۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'آپ نے سحر پروجیکٹ کو ایک روپیہ بھی ادا نہیں کرنا ۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'کسی بھی شعبہ سے تعلق رکھنے والے افراد اس میں شامل ہو کر حیران کن فوائد حاصل کر سکتے ہیں ۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'ہر شعبہ کے لیے آفرز نہ صرف حیران کن ہے بلکہ ناقابل عمل ظر آتی ہے یہی اس پروجیکٹ کے منفرد یا innovative ہونے کا ثبوت بھی ہے۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'اس پروجیکٹ کو ڈیزائن کرنے والے پروفیسر منور احمد ملک ہیں جو پہلے ہی 50 سے زائد ایجادات کے موجد ہیں۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'پاکستان انجینئرنگ کونسل اسلام آباد کے تھنک ٹینک کے ممبر رہ چکے ہیں۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'نیشنل لیول پر بہت سے پروجیکٹ ڈیزائن کر چکے ہیں پچھلے 20 سال سے اس پروجیکٹ کو ترتیب دے رہے تھے ، اسے اکنامکس کے ماہرین قابل عمل قرار دے چکے ہیں ۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'یہ مکان ہر تحصیل میں پہلے سے موجود سوسائٹیز یا کالونیز میں پلاٹ لے کر بنائے جائیں گے اور پبلک کو فری دیئے جائیں گے۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'یہ منصوبہ اپنے اندر ایک معاشی انقلاب بھی رکھتا ہے جب اتنی بڑی معاشی سرگرمی ایک لائن پر آجائے گی تو قیمتیں بھی کنٹرول میں آجائیں گی مہنگائی ختم ہو کر منفی ہو جائے گی ان شآءاللہ، ڈالر کا ریٹ بھی کنٹرول ہو جائے گا اور بیرونی قرضوں سے بھی نجات ملے گی ان شاءاللہ ۔',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                                fontSize: 20,
+                                height: 1.8,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Button
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ).copyWith(
+                              backgroundColor: MaterialStateProperty.all(
+                                Colors.white,
+                              ),
+                              overlayColor: MaterialStateProperty.all(
+                                Colors.white,
+                              ),
+                            ),
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.red.shade900,
+                                    Colors.red.shade500,
+                                    Colors.red.shade900,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: const Center(
+                                child: Text(
+                                  'بند کریں',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontFamily: 'UrduFont',
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       );
     },
   );

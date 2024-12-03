@@ -120,280 +120,262 @@ class _SetLocationViewState extends State<SetLocationView> {
               child: CircularProgressIndicator(),
             ),
           )
-        : SafeArea(
-            child: Scaffold(
-              resizeToAvoidBottomInset: false,
-              body: Stack(
-                children: [
-                  Image.asset(
-                    AppImages.pattern2,
-                    color: ColorManager.primary.withOpacity(0.1),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const TopBackButtonWidget(),
-                      buildVerticleSpace(20),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: getProportionateScreenWidth(27),
-                        ),
-                        child: kTextBentonSansMed(
-                          'Set Your Location',
-                          fontSize: getProportionateScreenHeight(25),
-                        ),
+        : Scaffold(
+      resizeToAvoidBottomInset: false,
+          body: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xffeaeffae).withOpacity(0.5),
+                  Colors.white,
+                  Colors.white.withOpacity(0.5),
+                  const Color(0xffeaeffae),
+                ],
+              ),
+            ),
+            child: Stack(
+              children: [
+                Image.asset(
+                  AppImages.pattern2,
+                  color: ColorManager.primary.withOpacity(0.1),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const TopBackButtonWidget(),
+                    buildVerticleSpace(20),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: getProportionateScreenWidth(27),
                       ),
-                      buildVerticleSpace(20),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(22),
-                        ),
-                        child: Container(
-                          // height: getProportionateScreenHeight(287),
-                          width: SizeConfig.screenWidth,
-                          decoration: BoxDecoration(
-                            color: ColorManager.white,
-                            borderRadius: BorderRadius.circular(
-                              getProportionateScreenHeight(22),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: ColorManager.black.withOpacity(0.05),
-                                blurRadius: getProportionateScreenHeight(15),
-                              ),
-                            ],
+                      child: kTextBentonSansMed(
+                        'Set Your Location',
+                        fontSize: getProportionateScreenHeight(25),
+                      ),
+                    ),
+                    buildVerticleSpace(20),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: getProportionateScreenWidth(22),
+                      ),
+                      child: Container(
+                        width: SizeConfig.screenWidth,
+                        decoration: BoxDecoration(
+                          color: ColorManager.white,
+                          borderRadius: BorderRadius.circular(
+                            getProportionateScreenHeight(22),
                           ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: getProportionateScreenWidth(11),
-                                  vertical: getProportionateScreenHeight(20),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      AppIcons.pinIcon,
-                                      height: getProportionateScreenHeight(33),
-                                      width: getProportionateScreenHeight(33),
-                                    ),
-                                    buildHorizontalSpace(14),
-                                    kTextBentonSansMed(
-                                      'Address',
-                                      fontSize:
-                                          getProportionateScreenHeight(15),
-                                    ),
-                                  ],
-                                ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: ColorManager.black.withOpacity(0.05),
+                              blurRadius: getProportionateScreenHeight(15),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: getProportionateScreenWidth(11),
+                                vertical: getProportionateScreenHeight(20),
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: getProportionateScreenWidth(17),
-                                  right: getProportionateScreenWidth(8),
-                                ),
-                                child: Form(
-                                  child: Column(
-                                    children: [
-                                      buildVerticleSpace(12),
-                                      TextFieldWidget(
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    AppIcons.pinIcon,
+                                    height: getProportionateScreenHeight(33),
+                                    width: getProportionateScreenHeight(33),
+                                  ),
+                                  buildHorizontalSpace(14),
+                                  kTextBentonSansMed(
+                                    'Address',
+                                    fontSize:
+                                        getProportionateScreenHeight(15),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                left: getProportionateScreenWidth(17),
+                                right: getProportionateScreenWidth(8),
+                              ),
+                              child: Form(
+                                child: Column(
+                                  children: [
+                                    buildVerticleSpace(12),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(15),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.1),
+                                            spreadRadius: 1,
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: TextFieldWidget(
                                         controller: addressController,
                                         hintText: 'Address',
                                         fillColor: ColorManager.lightGrey,
                                         blurRadius:
                                             getProportionateScreenHeight(3),
                                       ),
-                                      buildVerticleSpace(12),
-                                      DropDownWidget(
-                                          bgColor: ColorManager.lightGrey,
-                                          dropdownColor: ColorManager.white,
-                                          blurRadius:
-                                              getProportionateScreenHeight(3),
-                                          lableText: 'Province',
-                                          hintText: 'Select Province',
-                                          selectedOption: selectedProvince,
-                                          dropdownMenuItems: filterList2
-                                              .map<DropdownMenuItem<String>>(
-                                                (value) => DropdownMenuItem(
-                                                  value: value["title"],
-                                                  child: kTextBentonSansReg(
-                                                      value["title"]),
-                                                ),
-                                              )
-                                              .toList(),
-                                          onChange: (value) async {
-                                            String? data;
-                                            cities = data;
-                                            divisions = data;
-                                            tehsils = data;
-                                            var listDistrictId = filterList2
-                                                .where((element) =>
-                                                    (element["title"]
-                                                            .toString()
-                                                            .toLowerCase()
-                                                            .trim() ==
-                                                        value
-                                                            .toString()
-                                                            .toLowerCase()
-                                                            .trim()))
-                                                .toList();
-                                            loadingshowdialog(context);
-                                            filterDristrict.clear();
-                                            filterList.clear();
-                                            filterTehsil.clear();
+                                    ),
+                                    buildVerticleSpace(12),
+                                    _buildDropdown(
+                                      'Province',
+                                      'Select Province',
+                                      selectedProvince,
+                                      filterList2,
+                                      (value) async {
+                                        String? data;
+                                        cities = data;
+                                        divisions = data;
+                                        tehsils = data;
+                                        var listDistrictId = filterList2
+                                            .where((element) =>
+                                                (element["title"]
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .trim() ==
+                                                    value
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .trim()))
+                                            .toList();
+                                        loadingshowdialog(context);
+                                        filterDristrict.clear();
+                                        filterList.clear();
+                                        filterTehsil.clear();
 
-                                            print("Province ==> ${listDistrictId
-                                                .first["title"]
-                                                .toString()}");
+                                        print("Province ==> ${listDistrictId.first["title"].toString()}");
 
-                                            await citycall(listDistrictId
-                                                .first["_id"]
-                                                .toString());
-                                            print("City Call Id ==> ${listDistrictId
-                                                .first["_id"]
-                                                .toString()}");
-                                            setState(() {
-                                              selectedProvince =
-                                                  value.toString();
-                                            });
-                                            Navigator.pop(context);
-                                          }),
-                                      buildVerticleSpace(12),
-                                      DropDownWidget(
-                                          bgColor: ColorManager.lightGrey,
-                                          dropdownColor: ColorManager.white,
-                                          blurRadius:
-                                              getProportionateScreenHeight(3),
-                                          lableText: 'Division',
-                                          hintText: 'Select Division',
-                                          selectedOption: selectedDivision,
-                                          dropdownMenuItems: filterList
-                                              .map<DropdownMenuItem<String>>(
-                                                (value) => DropdownMenuItem(
-                                                  value:
-                                                      value["title"].toString(),
-                                                  child: kTextBentonSansReg(
-                                                      value["title"]
-                                                          .toString()),
-                                                ),
-                                              )
-                                              .toList(),
-                                          onChange: (value) async {
-                                            String? data;
-                                            cities = data;
-                                            cities = value;
-                                            var listDistrictId = filterList
-                                                .where((element) =>
-                                                    (element["title"]
-                                                            .toString()
-                                                            .toLowerCase()
-                                                            .trim() ==
-                                                        value
-                                                            .toString()
-                                                            .toLowerCase()
-                                                            .trim()))
-                                                .toList();
-                                            loadingshowdialog(context);
-                                            filterDristrict.clear();
-                                            filterTehsil.clear();
+                                        await citycall(listDistrictId.first["_id"].toString());
+                                        print("City Call Id ==> ${listDistrictId.first["_id"].toString()}");
+                                        setState(() {
+                                          selectedProvince = value.toString();
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    buildVerticleSpace(12),
+                                    _buildDropdown(
+                                      'Division',
+                                      'Select Division',
+                                      selectedDivision,
+                                      filterList,
+                                      (value) async {
+                                        String? data;
+                                        cities = data;
+                                        cities = value;
+                                        var listDistrictId = filterList
+                                            .where((element) =>
+                                                (element["title"]
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .trim() ==
+                                                    value
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .trim()))
+                                            .toList();
+                                        loadingshowdialog(context);
+                                        filterDristrict.clear();
+                                        filterTehsil.clear();
 
-                                            await districtsdata(listDistrictId
-                                                .first["_id"]
-                                                .toString());
+                                        await districtsdata(listDistrictId.first["_id"].toString());
 
-                                            setState(() {
-                                              selectedDivision =
-                                                  value.toString();
-                                            });
+                                        setState(() {
+                                          selectedDivision = value.toString();
+                                        });
 
-                                            Navigator.pop(context);
-                                            //
-                                          }),
-                                      buildVerticleSpace(12),
-                                      DropDownWidget(
-                                          bgColor: ColorManager.lightGrey,
-                                          dropdownColor: ColorManager.white,
-                                          blurRadius:
-                                              getProportionateScreenHeight(3),
-                                          lableText: 'District',
-                                          hintText: 'Select District',
-                                          selectedOption: selectedDistrict,
-                                          dropdownMenuItems: filterDristrict
-                                              .map<DropdownMenuItem<String>>(
-                                                (value) => DropdownMenuItem(
-                                                  value:
-                                                      value["title"].toString(),
-                                                  child: kTextBentonSansReg(
-                                                      value["title"]),
-                                                ),
-                                              )
-                                              .toList(),
-                                          onChange: (value) async {
-                                            String? data;
-                                            divisions = data;
-                                            divisions = value;
-                                            var listDistrictId = filterDristrict
-                                                .where((element) =>
-                                                    (element["title"]
-                                                            .toString()
-                                                            .toLowerCase()
-                                                            .trim() ==
-                                                        value
-                                                            .toString()
-                                                            .toLowerCase()
-                                                            .trim()))
-                                                .toList();
-                                            loadingshowdialog(context);
-                                            filterTehsil.clear();
-                                            await tehsildata(listDistrictId
-                                                .first["_id"]
-                                                .toString());
-                                            setState(() {
-                                              selectedDistrict =
-                                                  value.toString();
-                                            });
-                                            Navigator.pop(context);
-                                          }),
-                                      buildVerticleSpace(12),
-                                      DropDownWidget(
-                                          bgColor: ColorManager.lightGrey,
-                                          dropdownColor: ColorManager.white,
-                                          blurRadius:
-                                              getProportionateScreenHeight(3),
-                                          lableText: 'Tehsil',
-                                          hintText: 'Select Tehsil',
-                                          selectedOption: selectedTehsil,
-                                          dropdownMenuItems: filterTehsil
-                                              .map<DropdownMenuItem<String>>(
-                                                (value) => DropdownMenuItem(
-                                                  value:
-                                                      value["title"].toString(),
-                                                  child: kTextBentonSansReg(
-                                                      value["title"]),
-                                                ),
-                                              )
-                                              .toList(),
-                                          onChange: (value) {
-                                            String? data;
-                                            tehsils = data;
-                                            tehsils = value;
-                                            setState(() {
-                                              selectedTehsil = value.toString();
-                                            });
-                                          }),
-                                      buildVerticleSpace(12),
-                                    ],
-                                  ),
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    buildVerticleSpace(12),
+                                    _buildDropdown(
+                                      'District',
+                                      'Select District',
+                                      selectedDistrict,
+                                      filterDristrict,
+                                      (value) async {
+                                        String? data;
+                                        divisions = data;
+                                        divisions = value;
+                                        var listDistrictId = filterDristrict
+                                            .where((element) =>
+                                                (element["title"]
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .trim() ==
+                                                    value
+                                                        .toString()
+                                                        .toLowerCase()
+                                                        .trim()))
+                                            .toList();
+                                        loadingshowdialog(context);
+                                        filterTehsil.clear();
+                                        await tehsildata(listDistrictId.first["_id"].toString());
+                                        setState(() {
+                                          selectedDistrict = value.toString();
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    buildVerticleSpace(12),
+                                    _buildDropdown(
+                                      'Tehsil',
+                                      'Select Tehsil',
+                                      selectedTehsil,
+                                      filterTehsil,
+                                      (value) {
+                                        String? data;
+                                        tehsils = data;
+                                        tehsils = value;
+                                        setState(() {
+                                          selectedTehsil = value.toString();
+                                        });
+                                      },
+                                    ),
+                                    buildVerticleSpace(12),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                      // buildVerticalSpace(50),
-                      const Spacer(),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: getProportionateScreenWidth(118),
+                    ),
+                    const Spacer(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: getProportionateScreenWidth(25),
+                      ),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.green.shade900,
+                              Colors.green.shade500,
+                              Colors.green.shade900,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.withOpacity(0.25),
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                         child: AppButtonWidget(
                           ontap: () {
@@ -403,8 +385,7 @@ class _SetLocationViewState extends State<SetLocationView> {
                                 addressController.text.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content:
-                                          Text("Select the required fields")));
+                                      content: Text("Select the required fields")));
 
                               return;
                             }
@@ -435,17 +416,21 @@ class _SetLocationViewState extends State<SetLocationView> {
                                       UploadProfilePhotoView(user: userData,email: widget.email,),
                                 ));
                           },
-                          text: 'Next',
+                          child:  const Text(
+                            "Next",
+                            style: TextStyle(
+                                color: Colors.white, fontWeight: FontWeight.bold,fontSize: 20),
+                          ),
                         ),
                       ),
-
-                      buildVerticleSpace(50),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    buildVerticleSpace(50),
+                  ],
+                ),
+              ],
             ),
-          );
+          ),
+        );
   }
 
   String? cities;
@@ -571,4 +556,39 @@ class _SetLocationViewState extends State<SetLocationView> {
     }
   }
 
+}
+
+// Helper method to build dropdowns
+Widget _buildDropdown(String label, String hint, String? selectedValue, List<dynamic> items, ValueChanged<String?> onChange) {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 1,
+          blurRadius: 10,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: DropDownWidget(
+      bgColor: ColorManager.lightGrey,
+      dropdownColor: ColorManager.white,
+      blurRadius: getProportionateScreenHeight(3),
+      lableText: label,
+      hintText: hint,
+      selectedOption: selectedValue,
+      dropdownMenuItems: items
+          .map<DropdownMenuItem<String>>(
+            (value) => DropdownMenuItem(
+              value: value["title"],
+              child: kTextBentonSansReg(value["title"]),
+            ),
+          )
+          .toList(),
+      onChange: onChange,
+    ),
+  );
 }

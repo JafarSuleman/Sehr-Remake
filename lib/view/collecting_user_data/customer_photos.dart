@@ -35,9 +35,22 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
   Widget build(BuildContext context) {
     print("Special Package Location Id In UploadProfile PhotoView Screen ==> ${widget.user.selectedLocationId}");
     print("Special Email In UploadProfile PhotoView Screen ==> ${widget.email}");
-    return SafeArea(
-      child: Scaffold(
-        body: Stack(
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
+          ),
+        ),
+        child: Stack(
           children: [
             Image.asset(
               AppImages.pattern2,
@@ -46,6 +59,7 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: 30,),
                 const TopBackButtonWidget(),
                 buildVerticleSpace(24),
                 Padding(
@@ -63,11 +77,11 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
                     left: getProportionateScreenWidth(27),
                   ),
                   child: kTextBentonSansMed(
-                    'This data will be displayed in your\n\naccount profile for security',
-                    fontSize: getProportionateScreenHeight(12),
+                    'This data will be displayed in your\naccount profile for security',
+                    fontSize: getProportionateScreenHeight(15),
                   ),
                 ),
-                buildVerticleSpace(20),
+                buildVerticleSpace(40),
                 Padding(
                   padding: EdgeInsets.symmetric(
                     horizontal: getProportionateScreenWidth(34),
@@ -79,75 +93,100 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
                 const Spacer(),
                 Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: getProportionateScreenWidth(118),
+                    horizontal: getProportionateScreenWidth(35),
                   ),
-                  child: AppButtonWidget(
-                    ontap: () async {
-                      if (file == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Add An Image First")));
-                        return;
-                      }
-                      setState(() {
-                        isLoading = true;
-                      });
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.green.shade900,
+                          Colors.green.shade500,
+                          Colors.green.shade900,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.25),
+                          spreadRadius: 1,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: AppButtonWidget(
+                      ontap: () async {
+                        if (file == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Add An Image First")));
+                          return;
+                        }
+                        setState(() {
+                          isLoading = true;
+                        });
 
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      String authMethod = prefs.getString('authMethod') ?? '';
-                      String mobile;
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        String authMethod = prefs.getString('authMethod') ?? '';
+                        String mobile;
 
-                      // if (authMethod == 'phone') {
-                      //   mobile = prefs.getString('identifier')!;
-                      // } else {
-                      //   mobile = widget.user.mobile!;
-                      // }
+                        // if (authMethod == 'phone') {
+                        //   mobile = prefs.getString('identifier')!;
+                        // } else {
+                        //   mobile = widget.user.mobile!;
+                        // }
 
-                      print("Email ==> ${widget.email}");
-                      print("Phone Number ==> ${widget.user.mobile}");
-                      print("Location In Upload Photo ==> ${widget.user.selectedLocationId}");
+                        print("Email ==> ${widget.email}");
+                        print("Phone Number ==> ${widget.user.mobile}");
+                        print("Location In Upload Photo ==> ${widget.user.selectedLocationId}");
 
-                      userModel.User userData = userModel.User(
-                        firstName: widget.user.firstName,
-                        lastName: widget.user.lastName,
-                        cnic: widget.user.cnic,
-                        mobile: widget.user.mobile,
-                        education: widget.user.education,
-                        address: widget.user.address,
-                        tehsil: widget.user.tehsil,
-                        district: widget.user.district,
-                        province: widget.user.province,
-                        division: widget.user.division,
-                        package: widget.user.package,
-                        specialPackage: widget.user.specialPackage,
-                        email: widget.email,
-                        selectedLocationId: widget.user.selectedLocationId
-                      );
-
-                      String res = await UserController().createUserData(userData, file as XFile);
-
-                      setState(() {
-                        isLoading = false;
-                      });
-
-                      if (res == "User has Been Registered") {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomeScreen(),
-                          ),
-                              (Route<dynamic> route) => false, // This removes all previous routes
+                        userModel.User userData = userModel.User(
+                          firstName: widget.user.firstName,
+                          lastName: widget.user.lastName,
+                          cnic: widget.user.cnic,
+                          mobile: widget.user.mobile,
+                          education: widget.user.education,
+                          address: widget.user.address,
+                          tehsil: widget.user.tehsil,
+                          district: widget.user.district,
+                          province: widget.user.province,
+                          division: widget.user.division,
+                          package: widget.user.package,
+                          specialPackage: widget.user.specialPackage,
+                          email: widget.email,
+                          selectedLocationId: widget.user.selectedLocationId
                         );
 
-                      } else {
-                        // Display error and remain on the screen
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(res)),
-                        );
-                      }
-                    },
-                    child: isLoading
-                        ? loadingSpinkit(Colors.white)
-                        : const Text('Next',style: TextStyle(color: Colors.white),),
+                        String res = await UserController().createUserData(userData, file as XFile);
+
+                        setState(() {
+                          isLoading = false;
+                        });
+
+                        if (res == "User has Been Registered") {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                                (Route<dynamic> route) => false, // This removes all previous routes
+                          );
+
+                        } else {
+                          // Display error and remain on the screen
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(res)),
+                          );
+                        }
+                      },
+                      child: isLoading
+                          ? loadingSpinkit(Colors.white)
+                          : const Text(
+                        "Next",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600,fontSize: 20),
+                      ),
+                    ),
                   ),
                 ),
                 buildVerticleSpace(50),
@@ -201,6 +240,32 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
           height: getProportionateScreenHeight(260),
           width: getProportionateScreenWidth(250),
           decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white.withOpacity(0.95),
+                Colors.white.withOpacity(0.9),
+                Colors.white.withOpacity(0.85),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.5),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.green.withOpacity(0.02),
+                blurRadius: 2,
+                spreadRadius: 8,
+              ),
+              BoxShadow(
+                color: Colors.green.withOpacity(0.2),
+                blurRadius: 2,
+                spreadRadius: 8,
+              ),
+            ],
             image: DecorationImage(
               image: Image.file(
                 height: getProportionateScreenHeight(260),
@@ -209,7 +274,7 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
               ).image,
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.circular(20),
+
           ),
           child: Stack(
             children: [
@@ -249,17 +314,33 @@ class _UploadProfilePhotoViewState extends State<UploadProfilePhotoView> {
     return InkWell(
       onTap: ontap,
       child: Container(
-        height: getProportionateScreenHeight(129),
+        height: getProportionateScreenHeight(150),
         width: SizeConfig.screenWidth,
         decoration: BoxDecoration(
-          color: ColorManager.white,
-          borderRadius: BorderRadius.circular(
-            getProportionateScreenHeight(15),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.white.withOpacity(0.95),
+              Colors.white.withOpacity(0.9),
+              Colors.white.withOpacity(0.85),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.5),
+            width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: ColorManager.black.withOpacity(0.05),
-              blurRadius: getProportionateScreenHeight(15),
+              color: Colors.green.withOpacity(0.03),
+              blurRadius: 5,
+              spreadRadius: 5,
+            ),
+            BoxShadow(
+              color: Colors.green.withOpacity(0.3),
+              blurRadius: 5,
+              spreadRadius: 5,
             ),
           ],
         ),

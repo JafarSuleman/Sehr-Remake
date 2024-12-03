@@ -14,6 +14,7 @@ class AppButtonWidget extends StatelessWidget {
     this.textColor,
     this.letterSpacing,
     this.bgColor,
+    this.bgGradiant,
     this.height,
     this.width,
     this.borderRadius,
@@ -26,6 +27,7 @@ class AppButtonWidget extends StatelessWidget {
   final Color? textColor;
   final double? letterSpacing;
   final Color? bgColor;
+  final Gradient? bgGradiant;
   final double? height;
   final double? width;
   final double? borderRadius;
@@ -44,13 +46,7 @@ class AppButtonWidget extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: bgColor,
-          gradient: bgColor == null
-              ? LinearGradient(colors: [
-                  ColorManager.gradient1,
-                  // ColorManager.gradient1,
-                  ColorManager.gradient2,
-                ])
-              : null,
+
           border: border == true
               ? Border.all(
                   color: ColorManager.grey,

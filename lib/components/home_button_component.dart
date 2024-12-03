@@ -26,30 +26,53 @@ class HomeButtonComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40,
+      height: 50,
       width: width ?? 150,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(2),
-        color: btnColor ?? ColorManager.home_button,
+        borderRadius: BorderRadius.circular(15),
+        gradient: LinearGradient(
+          colors: [
+            Colors.green.shade900,
+            Colors.green.shade500,
+            Colors.green.shade900,
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withOpacity(0.25),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Center( // Center the entire Row
+      child: Center(
         child: Row(
-          mainAxisSize: MainAxisSize.min, // Shrink to fit content
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (iconData != null) Icon(iconData, size: 20,color: iconColor,),
+            if (iconData != null)
+              Icon(
+                iconData,
+                size: 20,
+                color: iconColor ?? Colors.white,
+              ),
             if (imagePath != null)
               Image.asset(
                 imagePath!,
                 width: 25,
                 height: 25,
                 fit: BoxFit.contain,
-                color: iconColor,
+                color: iconColor ?? Colors.white,
               ),
             if (iconData != null || imagePath != null) const SizedBox(width: 5),
             Text(
               name,
-              style: TextStyle(fontSize: 16,color: btnTextColor??Colors.black),
+              style: TextStyle(
+                fontSize: 16,
+                color: btnTextColor ?? Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
