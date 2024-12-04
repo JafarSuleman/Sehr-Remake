@@ -47,6 +47,7 @@ class OrderProcessingView extends StatelessWidget {
                 horizontal: getProportionateScreenWidth(125),
               ),
               child: AppButtonWidget(
+                bgColor: ColorManager.primary,
                 ontap: () {
                   Navigator.pop(context);
                 },

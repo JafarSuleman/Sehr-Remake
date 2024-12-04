@@ -39,199 +39,260 @@ class _ShopDetailsViewState extends State<ShopDetailsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SizedBox(
-      height: SizeConfig.screenHeight,
-      width: SizeConfig.screenWidth,
-      // color: ColorManager.white,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.topCenter,
-            child: Container(
-              color: ColorManager.primary,
-              height: getProportionateScreenHeight(350),
-              width: double.infinity,
-              child: CachedNetworkImage(
-                imageUrl:
-                    "${Constants.BASE_URL}/${widget.model.logo.toString()}",
-                fit: BoxFit.cover,
-                placeholder: (context, url) =>
-                    Image.asset("assets/images/shop.jpg", fit: BoxFit.fill),
-                errorWidget: (context, url, error) =>
-                    Image.asset("assets/images/shop.jpg", fit: BoxFit.fill),
-              ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: ColorManager.white.withOpacity(0.9),
+              shape: BoxShape.circle,
             ),
+            child: Icon(Icons.arrow_back_ios, color: ColorManager.primary),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              height: SizeConfig.screenHeight * 0.55,
-              width: SizeConfig.screenWidth,
-              decoration: BoxDecoration(
-                color: ColorManager.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(getProportionateScreenHeight(30)),
-                  topRight: Radius.circular(getProportionateScreenHeight(30)),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                // Hero Image
+                Container(
+                  height: getProportionateScreenHeight(420),
+                  width: double.infinity,
+                  child: CachedNetworkImage(
+                    imageUrl: "${Constants.BASE_URL}/${widget.model.logo}",
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Image.asset("assets/images/shop.jpg", fit: BoxFit.cover),
+                    errorWidget: (context, url, error) =>
+                        Image.asset("assets/images/shop.jpg", fit: BoxFit.cover),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: getProportionateScreenHeight(20),
-                  horizontal: getProportionateScreenWidth(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // Content Container
+                Container(
+                  margin: EdgeInsets.only(top: getProportionateScreenHeight(380)),
+                  decoration: BoxDecoration(
+                    color: ColorManager.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(getProportionateScreenHeight(30)),
+                      topRight: Radius.circular(getProportionateScreenHeight(30)),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(getProportionateScreenWidth(24)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            // widget.businessModel.isFavourite != true
-                            //     ? getxcontroller.addToFavourite(
-                            //         widget.businessModel.id)
-                            //     : getxcontroller.deleteFromFavourite(
-                            //         widget.businessModel.id);
-                            // var bools =
-                            //     widget.businessModel.isFavourite ==
-                            //             true
-                            //         ? false
-                            //         : true;
-                            // // getxcontroller.toggleFav(
-                            // //     filterbussinessshops![index].id
-                            // //         as int,
-                            // //     filterbussinessshops![index]
-                            // //         .isFavourite as bool);
-                            // widget.businessModel.isFavourite = bools;
-                            // for (var business
-                            //     in getxcontroller.business) {
-                            //   if (widget.businessModel.id ==
-                            //       business.id) {
-                            //     business.isFavourite = bools;
-                            //   }
-                            // }
-                            // if (mounted) {
-                            //   setState(() {});
-                            // }
-                          },
-                          child: CircleAvatar(
-                            radius: getProportionateScreenHeight(17),
-                            backgroundColor:
-                                ColorManager.error.withOpacity(0.1),
-                            child: Icon(
-                              Icons.favorite_border_rounded,
-                              color: ColorManager.errorLight,
-                              size: getProportionateScreenHeight(20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  kTextBentonSansMed(
+                                    widget.model.businessName.toString(),
+                                    fontSize: getProportionateScreenHeight(24),
+                                    color: ColorManager.primary,
+                                  ),
+                                  SizedBox(height: getProportionateScreenHeight(8)),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        size: 18,
+                                        color: ColorManager.primaryLight,
+                                      ),
+                                      SizedBox(width: 8),
+                                      Expanded(
+                                        child: kTextBentonSansReg(
+                                          widget.distance,
+                                          color: ColorManager.textGrey,
+                                          fontSize: getProportionateScreenHeight(14),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                // Favorite functionality remains the same...
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: ColorManager.error.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.favorite_border_rounded,
+                                  color: ColorManager.errorLight,
+                                  size: getProportionateScreenHeight(24),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Divider(height: getProportionateScreenHeight(30)),
+                        // Sehr Code Section
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: ColorManager.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              width: 1,
+                              color: Colors.green.withOpacity(0.5),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.qr_code,
+                                color: ColorManager.primary,
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  kTextBentonSansMed(
+                                    'Sehr Code',
+                                    fontSize: getProportionateScreenHeight(14),
+                                    color: ColorManager.primary,
+                                  ),
+                                  kTextBentonSansMed(
+                                    widget.model.sehrCode?.toString() ?? "Non Sehr Coded Shop",
+                                    fontSize: getProportionateScreenHeight(16),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: getProportionateScreenHeight(20)),
+                        // About Section
+                        Center(
+                          child: kTextBentonSansMed(
+                            'About',
+                            fontSize: getProportionateScreenHeight(18),
+                            color: ColorManager.primary,
+                          ),
+                        ),
+                        SizedBox(height: getProportionateScreenHeight(8)),
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: ColorManager.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                width: 1,
+                                color: Colors.green.withOpacity(0.5),
+                              ),
+                            ),
+                            child: kTextBentonSansReg(
+                              widget.model.about.toString(),
+                              lineHeight: 1.5,
+                              maxLines: 6,
+                              textOverFlow: TextOverflow.ellipsis,
+                              color: ColorManager.textGrey,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    buildVerticleSpace(20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        kTextBentonSansMed(
-                          widget.model.businessName.toString(),
-                          fontSize: getProportionateScreenHeight(27),
-                        ),
-                        buildVerticleSpace(20),
+                        SizedBox(height: getProportionateScreenHeight(24)),
+                        // Action Buttons
                         Row(
                           children: [
-                            kTextBentonSansMed(
-                              'Sehr Code : ',
+                            Expanded(
+                              child: AppButtonWidget(
+                                ontap: () => contactusdialog(context, widget.model.mobile.toString()),
+                                height: getProportionateScreenHeight(50),
+                                borderRadius: getProportionateScreenHeight(12),
+                                text: 'Contact',
+                                textSize: getProportionateScreenHeight(14),
+                                bgColor: ColorManager.primary.withOpacity(0.1),
+                                textColor: ColorManager.primary,
+                                border: true,
+                              ),
                             ),
-                            kTextBentonSansMed(
-                              widget.model.sehrCode.toString() ??
-                                  "Non Sehr Coded Shop",
+                            SizedBox(width: getProportionateScreenWidth(16)),
+                            Expanded(
+                              child: AppButtonWidget(
+                                ontap: _launchNavigationInMap,
+                                height: getProportionateScreenHeight(50),
+                                borderRadius: getProportionateScreenHeight(12),
+                                text: 'Go To Shop ↗',
+                                textSize: getProportionateScreenHeight(14),
+                                bgColor: ColorManager.primary.withOpacity(0.1),
+                                textColor: ColorManager.primary,
+                                border: true,
+
+
+                              ),
                             ),
                           ],
                         ),
-                        buildVerticleSpace(20),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_on_outlined,
-                              color: ColorManager.primaryLight,
-                            ),
-                            buildHorizontalSpace(13),
-                            kTextBentonSansReg(
-                              widget.distance,
-                              color: ColorManager.textGrey.withOpacity(0.8),
-                            ),
-                          ],
-                        ),
-                        buildVerticleSpace(20),
-                        kTextBentonSansMed(
-                          widget.model.about.toString(),
-                          height: 1.5,
-                          maxLines: 6,
-                          overFlow: TextOverflow.ellipsis,
-                        ),
-                        buildVerticleSpace(20),
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                AppButtonWidget(
-                                  ontap: () {
-                                    contactusdialog(context,
-                                        widget.model.mobile.toString());
-                                  },
-                                  height: getProportionateScreenHeight(40),
-                                  width: getProportionateScreenWidth(140),
-                                  borderRadius:
-                                      getProportionateScreenHeight(18),
-                                  text: 'Contact',
-                                  textSize: getProportionateScreenHeight(12),
-                                  letterSpacing:
-                                      getProportionateScreenWidth(0.5),
-                                ),
-                                const Spacer(),
-                                AppButtonWidget(
-                                  ontap: _launchNavigationInMap,
-                                  height: getProportionateScreenHeight(40),
-                                  width: getProportionateScreenWidth(140),
-                                  borderRadius:
-                                      getProportionateScreenHeight(18),
-                                  text: 'GO to Shop ↗',
-                                  textSize: getProportionateScreenHeight(12),
-                                  letterSpacing:
-                                      getProportionateScreenWidth(0.5),
-                                ),
+                        SizedBox(height: getProportionateScreenHeight(16)),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.green.shade900,
+                                Colors.green.shade500,
+                                Colors.green.shade900,
                               ],
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            AppButtonWidget(
-                              ontap: () {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          OrderPlacingView(widget.model,  widget.identifier,),
-                                    ));
-                              },
-                              height: getProportionateScreenHeight(40),
-                              width: getProportionateScreenWidth(140),
-                              borderRadius: getProportionateScreenHeight(18),
-                              text: 'Place Order',
-                              textSize: getProportionateScreenHeight(12),
-                              letterSpacing: getProportionateScreenWidth(0.5),
-                            ),
-                          ],
-                        )
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.25),
+                                spreadRadius: 1,
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          width: double.infinity,
+                          child: AppButtonWidget(
+                            ontap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OrderPlacingView(widget.model, widget.identifier),
+                                ),
+                              );
+                            },
+                            height: getProportionateScreenHeight(50),
+                            borderRadius: getProportionateScreenHeight(12),
+                            text: 'Place Order',
+                            textSize: getProportionateScreenHeight(16),
+                          ),
+                        ),
+                        SizedBox(height: 50,),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 }
 

@@ -55,131 +55,271 @@ class _SelectedPackageScreenState extends State<SelectedPackageScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sehr Packages"),
-        backgroundColor: ColorManager.gradient1,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 16.0),
-
-              if (userData.specialPackage != null)
-                GestureDetector(
-                  onTap: (){
-                    if (userData.specialPackage != null &&
-                        userData.specialPackage!.isNotEmpty) {
-                      Get.to(() => SelectedSpecialPackageScreen(specialPackageId: widget.selectedSpecialId,));
-                    }
-                  },
-                  child: const HomeButtonComponent(
-                    btnColor: Colors.redAccent,
-                    width: double.infinity,
-                    iconColor: Colors.white,
-                    btnTextColor: Colors.white,
-                    name: "Special Package Activated",
-                  ),
-                ),
-              if (activatedPackage != null)
-                Card(
-                  margin: const EdgeInsets.all(16.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Text(
-                          activatedPackage.title.toString(),
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'UrduFont',
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          activatedPackage.description.toString(),
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(fontFamily: 'UrduFont',fontSize: 18),
-                        ),
-                        const SizedBox(height: 16.0),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 50,right: 50),
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.resolveWith(
-                                    (states) => ColorManager.home_button // Original color for activated package,
-                              ),
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              padding: MaterialStateProperty.all<EdgeInsets>(
-                                const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                              ),
-                            ),
-                            onPressed: () {  },
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.check_circle, color: Colors.black, size: 15),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Activated',
-                                  style: TextStyle(color: Colors.black, fontSize: 10),
-                                ),
-                              ],
-                            )
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              const Divider(color: Colors.grey),
-              Text(
-                "Other Packages",
-                style: TextStyleManager.mediumTextStyle(fontSize: 16),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.green.shade900,
+                  Colors.green.shade500,
+                  Colors.green.shade900,
+                ],
               ),
-              const SizedBox(height: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: otherPackages.map((e) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              e.title.toString(),
-                              style: const TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'UrduFont',
-                              ),
-                              textAlign: TextAlign.right,
+            ),
+            child: AppBar(
+              title: const Text(
+                "Sehr Packages",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              centerTitle: true,
+              elevation: 4,
+              backgroundColor: Colors.transparent,
+              iconTheme: const IconThemeData(color: Colors.white),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+
+                if (userData.specialPackage != null)
+                  GestureDetector(
+                    onTap: (){
+                      if (userData.specialPackage != null &&
+                          userData.specialPackage!.isNotEmpty) {
+                        Get.to(() => SelectedSpecialPackageScreen(specialPackageId: widget.selectedSpecialId,));
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Container(
+                        width: double.infinity,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.red.shade600,
+                              Colors.red.shade800,
+                              Colors.red.shade900,
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.red.withOpacity(0.3),
+                              spreadRadius: 1,
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
                             ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              e.description.toString(),
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(fontFamily: 'UrduFont',fontSize: 18),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              AppIcons.specialIcon,
+                              color: Colors.white,
+                              height: 24,
+                              width: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              "Special Package Activated",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-            ],
+                  ),
+
+                if (activatedPackage != null)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Center(
+                            child: Text(
+                              activatedPackage.title.toString(),
+                              style: const TextStyle(
+                                fontSize: 26.0,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'UrduFont',
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(height: 18.0),
+                          Text(
+                            activatedPackage.description.toString(),
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              fontFamily: 'UrduFont',
+                              fontSize: 22,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.green.shade900,
+                                    Colors.green.shade500,
+                                    Colors.green.shade900,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.green.shade900.withOpacity(0.3),
+                                    spreadRadius: 1,
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.check_circle, color: Colors.white, size: 22),
+                                    SizedBox(width: 12),
+                                    Text(
+                                      'Activated',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                const Divider(color: Colors.grey),
+                const Text(
+                  "Other Packages",
+                  style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: otherPackages.map((e) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Center(
+                              child: Text(
+                                e.title.toString(),
+                                style: const TextStyle(
+                                  fontSize: 26.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'UrduFont',
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                            Text(
+                              e.description.toString(),
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                fontFamily: 'UrduFont',
+                                fontSize: 22,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
           ),
         ),
       ),

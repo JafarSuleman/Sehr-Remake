@@ -30,48 +30,37 @@ class _SelectedSpecialPackageScreenState extends State<SelectedSpecialPackageScr
   }
 
   Future<void> _loadPackages() async {
-    // Load packages if not already loaded
     await specialPackageController.loadSpecialPackages();
-    setState(() {
-      isLoading = false; // Set loading to false after packages are loaded
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      // Display loading indicator while fetching packages
       return Scaffold(
-        appBar: AppBar(
-          title: const Text("Selected Special Package"),
-          backgroundColor: ColorManager.home_button,
-        ),
+        appBar: _buildAppBar(),
         body: const Center(
           child: CircularProgressIndicator(),
         ),
       );
     }
 
-    // Attempt to find the activated special package
     SpecialPackageModel? activatedSpecialPackage;
     if (widget.specialPackageId != null) {
-      print("Looking for package ID: ${widget.specialPackageId}");
-
-      // Check for matching package in both lists
       activatedSpecialPackage = specialPackageController.commercialPackages.firstWhereOrNull(
             (pkg) => pkg.id == widget.specialPackageId,
-      ) ??
-          specialPackageController.nonCommercialPackages.firstWhereOrNull(
-                (pkg) => pkg.id == widget.specialPackageId,
-          );
+      ) ?? specialPackageController.nonCommercialPackages.firstWhereOrNull(
+            (pkg) => pkg.id == widget.specialPackageId,
+      );
     }
 
     if (activatedSpecialPackage == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text("Selected Special Package"),
-          backgroundColor: ColorManager.home_button,
-        ),
+        appBar: _buildAppBar(),
         body: const Center(
           child: Text(
             "No special package activated.",
@@ -82,26 +71,79 @@ class _SelectedSpecialPackageScreenState extends State<SelectedSpecialPackageScr
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Selected Special Package"),
-        backgroundColor: ColorManager.home_button,
+      appBar: _buildAppBar(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
+          ),
+        ),
+        child: SizedBox(
+          height: 290,
+          child: SpecialPackageItem(
+            packageId: activatedSpecialPackage.id,
+            title: activatedSpecialPackage.title,
+            description: activatedSpecialPackage.description,
+            note: activatedSpecialPackage.note,
+            description2: activatedSpecialPackage.description2,
+            viewListPressed: () {
+              userTableController.fetchUsersBySpecialPackage(
+                  activatedSpecialPackage!.id, activatedSpecialPackage.type);
+              Get.to(const ViewListScreen());
+            },
+            activatePressed: () {},
+            type: activatedSpecialPackage.type,
+            activateButtonText: "Activated",
+          ),
+        ),
       ),
-      body: SizedBox(
-        height: 270,
-        child: SpecialPackageItem(
-          packageId: activatedSpecialPackage.id,
-          title: activatedSpecialPackage.title,
-          description: activatedSpecialPackage.description,
-          note: activatedSpecialPackage.note,
-          description2: activatedSpecialPackage.description2,
-          viewListPressed: () {
-            userTableController.fetchUsersBySpecialPackage(
-                activatedSpecialPackage!.id, activatedSpecialPackage.type);
-            Get.to(const ViewListScreen());
-          },
-          activatePressed: () {},
-          type: activatedSpecialPackage.type,
-          activateButtonText: "Activated",
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(70),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.vertical(
+          bottom: Radius.circular(20),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.green.shade900,
+                Colors.green.shade500,
+                Colors.green.shade900,
+              ],
+            ),
+          ),
+          child: AppBar(
+            title: const Text(
+              "Selected Special Package",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            centerTitle: true,
+            elevation: 4,
+            backgroundColor: Colors.transparent,
+            iconTheme: const IconThemeData(color: Colors.white),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Get.back(),
+            ),
+          ),
         ),
       ),
     );

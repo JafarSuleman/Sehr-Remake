@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart' hide CarouselController;
+import 'package:flutter/services.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -173,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _bounceAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -641,7 +643,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ));
                             } else {
                               specialPackageInfoDialog(
-                                  context, userProvider.specialPackage);
+                                  context, userProvider.specialPackage,false,);
                             }
                           },
                           child: Padding(
@@ -662,8 +664,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               decoration: BoxDecoration(
                                                 gradient: LinearGradient(
                                                   colors: [
-                                                    Colors.red.shade600,
-                                                    Colors.red.shade800,
+                                                    Colors.red.shade900,
+                                                    Colors.red.shade500,
                                                     Colors.red.shade900,
                                                   ],
                                                 ),
@@ -707,8 +709,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         decoration: BoxDecoration(
                                           gradient: LinearGradient(
                                             colors: [
-                                              Colors.red.shade600,
-                                              Colors.red.shade800,
+                                              Colors.red.shade900,
+                                              Colors.red.shade300,
                                               Colors.red.shade900,
                                             ],
                                           ),

@@ -122,135 +122,230 @@ class _ReportScreenState extends State<ReportScreen> {
 
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('User Report'),
-        centerTitle: true,
-        backgroundColor: ColorManager.gradient1,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.green.shade900,
+                  Colors.green.shade500,
+                  Colors.green.shade900,
+                ],
+              ),
+            ),
+            child: AppBar(
+              title: const Text(
+                'User Report',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              centerTitle: true,
+              elevation: 4,
+              backgroundColor: Colors.transparent,
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
+          ),
+        ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Card(
-            elevation: 5.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Spendings',
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                  SizedBox(height: 10.0),
-                  Text(
-                    'Total:${getTotalSpendings(orders)}', // Replace with actual spending data
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  SizedBox(height: 10.0),
-                  Text(
-                    'Target: Rs ${activatedPackage?.salesTarget??'0'}',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20.0),
-          Card(
-            elevation: 5.0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Target Progress',
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                  SizedBox(height: 10.0),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: PieChart(
-                      emptyColor: Color.fromARGB(255, 176, 250, 103),
-                      dataMap: {"Target": getTotalSpendings(orders).toDouble()},
-                      chartType: ChartType.disc,
-                      baseChartColor:
-                      Color.fromARGB(255, 203, 248, 148)!.withOpacity(0.5),
-                      colorList: colorList,
-                      chartValuesOptions: const ChartValuesOptions(
-                        showChartValuesInPercentage: true,
-                      ),
-                      totalValue: activatedPackage?.salesTarget,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
                     ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Spendings',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 15.0),
+                      Text(
+                        'Total: Rs ${getTotalSpendings(orders)}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Text(
+                        'Target: Rs ${activatedPackage?.salesTarget ?? '0'}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            "Orders",
-            style: TextStyleManager.boldTextStyle(fontSize: 16),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          SizedBox(
-            height: 50,
-            child: ListView.builder(
-              itemCount: searchTypes.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedSearchType = index;
-                  });
-                },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Container(
-                    height: 50,
-                    width: 80,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: ColorManager.textGrey),
-                        borderRadius: BorderRadius.circular(15),
-                        color: selectedSearchType == index
-                            ? ColorManager.gradient2
-                            : ColorManager.grey),
-                    padding: const EdgeInsets.all(5),
-                    child: Center(
-                      child: Text(
-                        searchTypes[index],
-                        style: TextStyleManager.regularTextStyle(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Target Progress',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade900,
+                        ),
+                      ),
+                      const SizedBox(height: 15.0),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: PieChart(
+                          emptyColor: Colors.green.shade200,
+                          dataMap: {"Target": getTotalSpendings(orders).toDouble()},
+                          chartType: ChartType.disc,
+                          baseChartColor: Colors.green.shade100,
+                          colorList: [Colors.green.shade700],
+                          chartValuesOptions: const ChartValuesOptions(
+                            showChartValuesInPercentage: true,
+                          ),
+                          totalValue: activatedPackage?.salesTarget,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                "Orders",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green.shade900,
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 50,
+              child: ListView.builder(
+                itemCount: searchTypes.length,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedSearchType = index;
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      height: 50,
+                      width: 90,
+                      decoration: BoxDecoration(
+                        gradient: selectedSearchType == index
+                            ? LinearGradient(
+                                colors: [
+                                  Colors.green.shade900,
+                                  Colors.green.shade500,
+                                ],
+                              )
+                            : null,
+                        color: selectedSearchType != index ? Colors.white : null,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          searchTypes[index],
+                          style: TextStyle(
                             fontSize: 16,
+                            fontWeight: FontWeight.w500,
                             color: selectedSearchType == index
                                 ? Colors.white
-                                : Colors.black),
+                                : Colors.black87,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
+            const SizedBox(height: 10),
+            Expanded(
               child: FutureBuilder(
                 future: BussinessController()
                     .getSelectedBussiness(orderToShow(selectedSearchType)),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   }
                   if (snapshot.hasData) {
                     return ListView.builder(
@@ -339,7 +434,7 @@ class _ReportScreenState extends State<ReportScreen> {
               ))
         ],
       ),
-    );
+    ));
   }
 }
 

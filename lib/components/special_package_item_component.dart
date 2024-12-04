@@ -32,124 +32,156 @@ class SpecialPackageItem extends StatelessWidget {
     final controller = Get.find<SpecialPackageController>();
 
     return Card(
-      elevation: 1,
+      elevation: 4,
       margin: const EdgeInsets.all(16.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          gradient: const LinearGradient(
-            colors: [Color(0xFFE0FFE8), Colors.white],
-            begin: Alignment.centerRight,
-            end: Alignment.centerLeft,
+          borderRadius: BorderRadius.circular(15),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
+            ],
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.green.shade900.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Center(
                 child: Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 25.0,
+                  style: TextStyle(
+                    fontSize: 28.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'UrduFont',
+                    color: Colors.green.shade900,
                   ),
                   textAlign: TextAlign.right,
                   textDirection: TextDirection.rtl,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 18.0,
+                style: TextStyle(
+                  fontSize: 20.0,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'UrduFont',
+                  color: Colors.green.shade800,
                 ),
                 textAlign: TextAlign.right,
                 textDirection: TextDirection.rtl,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               InkWell(
                 onTap: () {
                   controller.showInfoDialog(context, title, description2, note);
                 },
-                child: const Text(
+                child: Text(
                   'تفصیل دیکھیں',
                   style: TextStyle(
-                    color: Colors.lightBlue,
-                    fontSize: 15.0,
+                    color: Colors.blue.shade700,
+                    fontSize: 16.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'UrduFont',
                     decoration: TextDecoration.underline,
-                    decorationColor: Colors.lightBlue,
+                    decorationColor: Colors.blue.shade700,
                   ),
                   textAlign: TextAlign.right,
                   textDirection: TextDirection.rtl,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.resolveWith(
-                              (states) => ColorManager.lightBlue,
-                        ),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: viewListPressed,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xff134250),
+                              const Color(0xff12293c),
+                              Colors.blue.shade800,
+                            ],
                           ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                        constraints: const BoxConstraints(minWidth: 88, minHeight: 36),
+                        alignment: Alignment.center,
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.list_alt, color: Colors.white, size: 14),
+                            SizedBox(width: 4),
+                            Text(
+                              'View List',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      onPressed: viewListPressed,
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.list_alt, color: Colors.black, size: 15),
-                          SizedBox(width: 5),
-                          Text(
-                            'View List',
-                            style: TextStyle(color: Colors.black, fontSize: 10),
-                          ),
-                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.resolveWith(
-                              (states) => ColorManager.home_button,
-                        ),
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: activatePressed,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.green.shade900,
+                              Colors.green.shade500,
+                              Colors.green.shade900,
+                            ],
                           ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                        constraints: const BoxConstraints(minWidth: 88, minHeight: 36),
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.check_circle, color: Colors.white, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              activateButtonText,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      onPressed: activatePressed,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.check_circle, color: Colors.black, size: 15),
-                          const SizedBox(width: 5),
-                          Text(
-                            activateButtonText,
-                            style: const TextStyle(color: Colors.black, fontSize: 10),
-                          ),
-                        ],
                       ),
                     ),
                   ),

@@ -333,8 +333,11 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                           String identifier = prefs.getString('identifier') ?? '';
 
                           String? phone;
+                          String? email;
                           if (authMethod == 'phone') {
                             phone = identifier;
+                          }else if (authMethod == 'email') {
+                            email = identifier;
                           }
                           // if (authMethod == 'email' && phoneNumberController.text.isEmpty) {
                           //   ScaffoldMessenger.of(context).showSnackBar(
@@ -356,7 +359,7 @@ class _AddCustomerBioViewState extends State<AddCustomerBioView> {
                                   gender: selectedGender,
                                   education: selectedEducation,
                                   package: widget.packageName,
-                                  email: widget.email,
+                                  email: widget.email ?? email,
                                   specialPackage: widget.specialPackageName,
                                   selectedLocationId: widget.selectedLocationId,
 

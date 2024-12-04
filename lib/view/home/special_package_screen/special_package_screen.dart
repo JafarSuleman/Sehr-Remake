@@ -24,69 +24,150 @@ class SpecialPackageScreen extends StatefulWidget {
 class _SpecialPackageScreenState extends State<SpecialPackageScreen> {
   @override
   Widget build(BuildContext context) {
-    // You can now use widget.selectedLocationId
     print('Selected Location ID: ${widget.selectedLocationId}');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Special Packages'),
-        centerTitle: true,
-        backgroundColor: ColorManager.home_button,
-        leading: InkWell(
-          onTap: () {
-            Get.back();
-          },
-          child: const Icon(Icons.arrow_back),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(70),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.green.shade900,
+                  Colors.green.shade500,
+                  Colors.green.shade900,
+                ],
+              ),
+            ),
+            child: AppBar(
+              title: const Text(
+                'Special Packages',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              centerTitle: true,
+              elevation: 4,
+              backgroundColor: Colors.transparent,
+              iconTheme: const IconThemeData(color: Colors.white),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Get.back(),
+              ),
+            ),
+          ),
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppPadding.p12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => CommercialPackagesScreen(
-                    email: widget.email,
-                    isFromLogin: widget.isFromLogin,
-                    isFromLogout: widget.isFromLogout,
-                    selectedLocationId: widget.selectedLocationId,
-                  ));
-                },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppPadding.p12),
-                  child: SpecialPackageButtonComponent(
-                    width: double.infinity,
-                    imagePath: AppIcons.commercialIcon,
-                    height: 120,
-                    text: "کمرشل",
-                    text2: '(بزنس مین۔انڈسٹریلسٹ)',
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppMargin.m17),
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => NonCommercialPackagesScreen(
-                    email: widget.email,
-                    isFromLogin: widget.isFromLogin,
-                    isFromLogout: widget.isFromLogout,
-                    selectedLocationId: widget.selectedLocationId,
-                  ));
-                },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppPadding.p12),
-                  child: SpecialPackageButtonComponent(
-                    width: double.infinity,
-                    imagePath: AppIcons.nonCommercialIcon,
-                    height: 120,
-                    text: "نان کمرشل",
-                    text2: '( ملازمت پیشہ۔ بے روزگار۔اورسیز)',
-                  ),
-                ),
-              ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xffeaeffae).withOpacity(0.5),
+              Colors.white,
+              Colors.white.withOpacity(0.5),
+              const Color(0xffeaeffae),
             ],
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppPadding.p12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => CommercialPackagesScreen(
+                      email: widget.email,
+                      isFromLogin: widget.isFromLogin,
+                      isFromLogout: widget.isFromLogout,
+                      selectedLocationId: widget.selectedLocationId,
+                    ));
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: AppPadding.p12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.green.shade900,
+                          Colors.green.shade500,
+                          Colors.green.shade900,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.shade900.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const SpecialPackageButtonComponent(
+                      width: double.infinity,
+                      imagePath: AppIcons.commercialIcon,
+                      height: 120,
+                      text: "کمرشل",
+                      text2: '(بزنس مین۔انڈسٹریلسٹ)',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppMargin.m17),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(() => NonCommercialPackagesScreen(
+                      email: widget.email,
+                      isFromLogin: widget.isFromLogin,
+                      isFromLogout: widget.isFromLogout,
+                      selectedLocationId: widget.selectedLocationId,
+                    ));
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: AppPadding.p12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.green.shade900,
+                          Colors.green.shade500,
+                          Colors.green.shade900,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.shade900.withOpacity(0.3),
+                          spreadRadius: 1,
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const SpecialPackageButtonComponent(
+                      width: double.infinity,
+                      imagePath: AppIcons.nonCommercialIcon,
+                      height: 120,
+                      text: "نان کمرشل",
+                      text2: '( ملازمت پیشہ۔ بے روزگار۔اورسیز)',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
